@@ -672,25 +672,9 @@ body.has-buybar{padding-bottom:calc(140px + env(safe-area-inset-bottom))}
 .hs-ref .hs-cta{margin-top:auto}
 .hs-ref .c1{width:40%;right:5%;top:-8%}
 .hs-ref .c2{width:31%;left:6%;top:4%}
-@media (min-width:600px){
-  .hs-ref .hs-h{font-size:52px}
-  .hs-ref .coin b{font-size:34px}.hs-ref .c2 b{font-size:26px}.hs-ref .coin small{font-size:11px}
-  .hs-ref .hs-art{height:42%}
-  .hs-ref .c1{width:34%;right:5%}.hs-ref .c2{width:27%;left:12%}
-  .ref-card{height:48px;font-size:13.5px;padding:0 14px}
-}
-@media (min-width:900px){
-  .ib-acc{display:grid}
-  .hs-ref .hs-art{left:50%;right:2%;top:28px;bottom:28px;height:auto}
-  .hs-ref .hs-h{font-size:66px;max-width:48%}
-  .hs-ref .hs-p{font-size:18px;max-width:44%}
-  .hs-ref .hs-p b{font-size:19px}
-  .hs-ref .hs-cta{margin-top:28px;max-width:440px}
-  .hs-ref .c1{width:42%;right:6%;top:2%}
-  .hs-ref .c2{width:32%;left:4%;top:auto;bottom:16%}
-  .hs-ref .coin b{font-size:42px}.hs-ref .c2 b{font-size:31px}.hs-ref .coin small{font-size:12px}
-  .hs-ref .ref-card{bottom:4%}
-}
+@media (min-width:600px){.ref-card{height:48px;font-size:13.5px;padding:0 14px}}
+@media (min-width:900px){.ib-acc{display:grid}}
+/* раскладка слайда «Приводите друзей» на планшете и шире — в 09-hero.css вместе с остальными баннерами */
 
 /* --- кабинет --- */
 .acc-hero{position:relative;overflow:hidden;isolation:isolate;border-radius:var(--r);margin:6px 0 14px;color:#fff;
@@ -898,9 +882,6 @@ body.has-buybar{padding-bottom:calc(140px + env(safe-area-inset-bottom))}
   .duo{grid-template-columns:1fr 1fr}
   .cards3{grid-template-columns:repeat(3,minmax(0,1fr))}
   .sys-stats{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .hs{aspect-ratio:16/11}
-  .hs-big{font-size:clamp(110px,22vw,190px)}
-  .hs-art{left:30%}
   .b-acts{grid-template-columns:1.3fr 1fr}
   .foot-g{grid-template-columns:2fr 1fr 1fr}
 }
@@ -935,21 +916,6 @@ body.has-buybar{padding-bottom:calc(140px + env(safe-area-inset-bottom))}
   .sec-h h2{font-size:28px}
   .stories{margin-bottom:18px}
   .st{width:84px}.st-ring{width:80px;height:80px}
-  .h-track{gap:0}
-  .hs{aspect-ratio:auto;height:460px;max-height:none}
-  .hs-in{padding:40px 48px 40px}
-  .hs-kick{justify-content:flex-start;gap:14px}
-  .hs-big{position:relative;left:auto;right:auto;top:auto;margin:26px 0 0;font-size:150px;width:auto}
-  .hs-art{left:44%;right:0;top:24px;bottom:24px;height:auto}
-  .f1{right:6%}.f3{right:38%}.f2{left:2%}.f4{left:30%}
-  .hs-offer{margin-top:auto;max-width:44%}
-  .tagp b{font-size:38px}
-  .hs-offer p{font-size:16px}
-  .hs-cta{max-width:44%}
-  .hs-h{font-size:54px;max-width:50%}
-  .hs-p{font-size:17px;max-width:44%;-webkit-line-clamp:3}
-  .hs-new .hs-art,.hs-trade .hs-art,.hs-dyson .hs-art{top:24px;bottom:0;height:auto;left:48%}
-  .hs-new .hs-cta,.hs-trade .hs-cta,.hs-dyson .hs-cta{margin-top:28px;max-width:360px}
   .fresh{margin-top:16px}
   .qcats{grid-template-columns:repeat(8,minmax(0,1fr));gap:16px 12px}
   .qc{font-size:12.5px}
@@ -1006,8 +972,80 @@ body.has-buybar{padding-bottom:calc(140px + env(safe-area-inset-bottom))}
   .rail{grid-template-columns:repeat(5,minmax(0,1fr))}
   .rail>.pc:nth-child(n+9){display:flex}
   .rail>.pc:nth-child(n+11){display:none}
-  .hs{height:500px}
-  .hs-big{font-size:176px}
 }
 @media (hover:none){.pc:hover{transform:none}.pc:hover .pic img{transform:none}}
+
+/* --- баннеры главной на любой ширине ---
+   до 600px — «телефон» (03-home.css): текст сверху, товары под ним, кнопки внизу;
+   от 600px — две колонки: текст и кнопки слева, товары крупно справа на всю высоту баннера.
+   Высота, шрифты, отступы и товары растут плавно (clamp от ширины экрана) — без скачков планшет → ноутбук → монитор. */
+@media (max-width:599px){
+  /* товары занимают всё место между текстом и кнопкой — на широком телефоне не остаётся пустой середины */
+  .hs-new .hs-art,.hs-trade .hs-art,.hs-dyson .hs-art{top:41%;bottom:72px;height:auto}
+  .hs-dyson .hs-art{top:32%}                       /* тонкие стайлеры — выше, чтобы не терялись */
+  .hs-trade .hs-art{top:45%}                       /* у трейд-ина заголовок в 3 строки — телефоны чуть ниже */
+  .hs-ref .pill{white-space:nowrap}
+}
+@media (max-width:389px){.yc-l{display:none}}     /* узкий телефон: «Яндекс ID» без «Вход через» — плашки в одну строку */
+@media (max-width:374px){
+  .hs-new .hs-art,.hs-dyson .hs-art{top:46%}
+  .hs-trade .hs-art{top:48%}
+  .hs-dyson .hs-art{top:36%}
+}
+@media (max-width:359px){
+  .hs-ref .hs-kick .pill{display:none}
+  .hs-ref .hs-h{font-size:30px}
+}
+@media (min-width:600px){
+  .h-track{gap:0}
+  .hs{aspect-ratio:auto;height:clamp(400px,52vw,520px);max-height:none}
+  .hs-in{padding:clamp(26px,3.6vw,46px) clamp(26px,4.2vw,56px)}
+  .hs-kick{justify-content:flex-start;gap:12px}
+  .hs-h{font-size:clamp(28px,4.7vw,60px);max-width:50%;margin-top:clamp(14px,1.8vw,22px)}
+  .hs-p{font-size:clamp(14.5px,1.65vw,18px);max-width:46%;-webkit-line-clamp:3;margin-top:clamp(8px,1.1vw,14px)}
+  .hs-p b{font-size:clamp(17px,1.9vw,22px)}
+  .hs-cta{max-width:min(56%,440px);margin-top:clamp(20px,2.6vw,32px)}
+  .hs-cta .btn,.hs-cta .code{height:clamp(48px,4.4vw,56px);font-size:clamp(14px,1.4vw,16px)}
+  /* товары меряются и по высоте, и по ширине правой колонки (cqh/cqw): на узком экране не налезают на текст.
+     Старые браузеры без container queries берут прежнюю высоту в % — первая строка в каждой паре */
+  .hs-art{left:46%;right:0;top:4%;bottom:3%;height:auto;container-type:size}
+  .n1{height:96%;height:min(96%,88cqw)}.n2{height:84%;height:min(84%,76cqw)}
+  .t2{height:98%;height:min(98%,94cqw)}.t1{height:80%;height:min(80%,112cqw)}
+
+  /* слайды с товаром: текст по центру по высоте, товары справа крупно */
+  .hs-new .hs-in,.hs-trade .hs-in,.hs-dyson .hs-in,.hs-ref .hs-in{justify-content:center}
+  .hs-new .hs-cta,.hs-trade .hs-cta,.hs-dyson .hs-cta,.hs-ref .hs-cta{margin-top:clamp(22px,2.8vw,34px)}
+  .hs-new .hs-art,.hs-trade .hs-art,.hs-dyson .hs-art{left:48%;right:0;top:6%;bottom:0;height:auto}
+
+  /* 11.11: огромные цифры слева, скидка и кнопки — внизу левой колонки */
+  .hs-big{position:relative;left:auto;right:auto;top:auto;width:auto;margin:clamp(10px,1.8vw,22px) 0 0;font-size:clamp(96px,14.6vw,184px)}
+  .hs-offer{margin-top:auto;max-width:min(56%,460px)}
+  .hs-sale .hs-cta{max-width:min(56%,460px)}
+  .tagp b{font-size:clamp(26px,3.3vw,40px)}
+  .hs-offer p{font-size:clamp(14px,1.5vw,17px)}
+  .hs-sale .hs-art{left:44%;top:6%;bottom:4%}
+  .f1{height:94%;height:min(94%,90cqw);right:4%}
+  .f3{height:74%;height:min(74%,62cqw);right:40%}
+  .f2{height:40%;height:min(40%,38cqw);left:4%;top:0;bottom:auto}
+  .f4{height:30%;height:min(30%,30cqw);left:auto;right:58%;bottom:0}
+
+  /* «Приводите друзей» */
+  .hs-ref .hs-h{font-size:clamp(40px,6.2vw,74px);line-height:.96;max-width:52%}
+  .hs-ref .hs-p{font-size:clamp(15px,1.7vw,19px);max-width:46%}
+  .hs-ref .hs-p b{font-size:clamp(16px,1.85vw,21px)}
+  .hs-ref .hs-art{left:50%;right:2%;top:7%;bottom:7%;height:auto}
+  .hs-ref .c1{width:46%;right:4%;top:0}
+  .hs-ref .c2{width:35%;left:2%;top:auto;bottom:18%}
+  .hs-ref .coin b{font-size:clamp(26px,3.5vw,46px)}
+  .hs-ref .c2 b{font-size:clamp(19px,2.6vw,34px)}
+  .hs-ref .coin small{font-size:clamp(10px,1vw,12.5px)}
+  .hs-ref .ref-card{bottom:2%;height:clamp(42px,4.2vw,52px);font-size:clamp(12px,1.25vw,14px)}
+}
+@media (min-width:600px) and (max-width:799px){   /* узкая раскладка в две колонки: телефоны чуть правее текста */
+  .hs-new .hs-art,.hs-trade .hs-art{left:52%}
+}
+@media (min-width:1200px){
+  .hs-ref .c1{right:8%}
+  .hs-ref .c2{left:6%}
+}
 
