@@ -141,15 +141,22 @@ document.addEventListener('click', function (e) {
   if (navigator.share) navigator.share(d).catch(function () {});
   else if (navigator.clipboard) navigator.clipboard.writeText(location.href).then(function () { toast('Ссылка скопирована'); });
 });
-// отсчёт до конца акции: data-cd="2026-11-15T23:59:59+03:00"
+// отсчёт до конца акции: data-cd="2026-11-15T23:59:59+03:00". Когда акция кончилась, всё с data-promo
+// (баннер, вкладка «Акция», цены с кодом) прячется само на любой странице, а data-promo-over — показывается.
 (function () {
+  var end = Date.parse(document.documentElement.getAttribute('data-promo-end') || '');
+  function over() {
+    document.querySelectorAll('[data-promo],[data-cd]').forEach(function (p) { p.hidden = true; });
+    document.querySelectorAll('[data-promo-over]').forEach(function (p) { p.hidden = false; });
+  }
+  if (end && end <= Date.now()) { over(); return; }
   var els = document.querySelectorAll('[data-cd]');
   if (!els.length) return;
   var pad = function (n) { return (n < 10 ? '0' : '') + n; };
   function tick() {
     els.forEach(function (el) {
       var left = Date.parse(el.getAttribute('data-cd')) - Date.now();
-      if (!(left > 0)) { el.hidden = true; document.querySelectorAll('[data-promo]').forEach(function (p) { p.hidden = true; }); return; }
+      if (!(left > 0)) { over(); return; }
       var s = Math.floor(left / 1000);
       var set = function (q, v) { var x = el.querySelector(q); if (x && x.textContent !== v) x.textContent = v; };
       set('[data-d]', String(Math.floor(s / 86400))); set('[data-h]', pad(Math.floor(s / 3600) % 24));
@@ -406,6 +413,7 @@ if (grid) {
   var hero = document.querySelector('[data-hero]');
   if (!hero) return;
   var track = hero.querySelector('[data-track]'), slides = track.children, dots = hero.querySelector('[data-dots]');
+  Array.prototype.forEach.call(track.querySelectorAll('.hs[hidden]'), function (s) { s.remove(); });   // акция кончилась
   if (!slides.length) return;
   var cur = 0, hold = 0;
   for (var i = 0; i < slides.length; i++) {
@@ -434,7 +442,16 @@ if (grid) {
   var data = document.getElementById('stories-data'), sv = document.querySelector('[data-sv]');
   if (!data || !sv) return;
   var S = JSON.parse(data.textContent), seen = ls('emir_seen', []);
+  var pend = Date.parse(data.getAttribute('data-end') || '');
+  if (pend && pend <= Date.now()) {                       // акция кончилась: без её сторис и цен с кодом
+    var rings = document.querySelectorAll('[data-story]');
+    S = S.filter(function (g, k) { var drop = g.s[0] && g.s[0].k === 'promo'; if (drop && rings[k]) rings[k].remove(); return !drop; });
+    S.forEach(function (g) { g.s.forEach(function (s) { s.pp = 0; }); });
+    document.querySelectorAll('[data-story]').forEach(function (b, k) { b.setAttribute('data-story', k); });
+  }
   var ICO = {swap: '<path d="M17 3l4 4-4 4"/><path d="M3 7h18"/><path d="M7 21l-4-4 4-4"/><path d="M21 17H3"/>',
+    gift: '<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8"/><path d="M12 8S10.5 3 8 3a2.5 2.5 0 0 0 0 5M12 8s1.5-5 4-5a2.5 2.5 0 0 1 0 5"/>',
+    user: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
     check: '<path d="M5 12l5 5 9-10"/>', percent: '<path d="M19 5L5 19"/><circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="17" r="2.5"/>',
     truck: '<rect x="1" y="6" width="14" height="11" rx="1"/><path d="M15 9h4l3 3v5h-7"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/>'};
   var svg = function (b, s) { return '<svg width="' + s + '" height="' + s + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + b + '</svg>'; };
@@ -551,13 +568,160 @@ document.querySelectorAll('form[data-oneclick]').forEach(function (f) {
   });
 });
 
+/* личный кабинет и «Приводите друзей». Демо без сервера: вход, бонусы и заказы живут в этом браузере.
+   В рабочей версии те же экраны работают через сервер магазина: Яндекс ID, код по SMS, бонусы в базе. */
+var ACC = {w: 0, r: 0, m: 0, x: 0};
+try { ACC = JSON.parse(document.documentElement.getAttribute('data-acc') || '{}'); } catch (e) {}
+var UKEY = 'emir_user', OKEY = 'emir_orders';
+var MON = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+var num = function (n) { return String(Math.round(n || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, ' '); };   // «1 000» не рвётся
+var pl = function (n, one, few, many) {
+  n = Math.abs(n) % 100; var d = n % 10;
+  return n > 10 && n < 20 ? many : d > 1 && d < 5 ? few : d === 1 ? one : many;
+};
+function user() { return ls(UKEY, null); }
+function orders() { return ls(OKEY, []); }
+function accMark() {
+  var on = !!user();
+  document.querySelectorAll('[data-acc-link]').forEach(function (a) { a.classList.toggle('on', on); });
+}
+function setUser(u) {
+  if (u) lss(UKEY, u); else { try { localStorage.removeItem(UKEY); } catch (e) {} }
+  accMark();
+}
+function copyText(t, msg) {
+  var done = function () { buzz(18); toast(msg || 'Скопировано'); };
+  var legacy = function () {
+    var ta = document.createElement('textarea'), ok = false;
+    ta.value = t; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
+    document.body.appendChild(ta); ta.select();
+    try { ok = document.execCommand('copy'); } catch (e) {}
+    ta.remove();
+    if (ok) done(); else toast('Не получилось скопировать — выделите ссылку и скопируйте вручную', 3500);
+  };
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t).then(done, legacy); else legacy();
+}
+accMark();
+
+// пришли по ссылке друга: запоминаем код и подсказываем про скидку
+(function () {
+  var m = /[?&]ref=([A-Za-z0-9]{4,10})/.exec(location.search);
+  if (!m) return;
+  var code = m[1].toUpperCase(), u = user();
+  if (u && u.code === code) return;                       // своя же ссылка
+  lss('emir_ref', code);
+  if (!orders().length && ACC.w) setTimeout(function () {
+    toast('🎁 Друг дарит вам −' + fmt(ACC.w) + ' на первую покупку от ' + fmt(ACC.m) + ' · <a href="' + B + '/account/">Войти</a>', 6500);
+  }, 700);
+})();
+
+var accRoot = document.querySelector('[data-acc-root]');
+if (accRoot) (function () {
+  var back = /[?&]back=cart/.test(location.search);
+  var tpl = function (id) { var t = document.getElementById(id); return t ? t.innerHTML : ''; };
+  var day = function (t) { var d = new Date(t); return d.getDate() + ' ' + MON[d.getMonth()]; };
+  var mask = function (p) { var d = String(p || '').replace(/\D/g, '').slice(-10); return d.length === 10 ? '+7 ' + d[0] + '•• •••-••-' + d.slice(8) : ''; };
+  var code6 = function () {
+    var a = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', s = '';
+    for (var i = 0; i < 6; i++) s += a[Math.floor(Math.random() * a.length)];
+    return s;
+  };
+  function enter(via, phone) {
+    setUser({via: via, phone: phone || '', code: code6(), bal: 0, fr: 0, hist: [], t: Date.now(), ref: ls('emir_ref', '')});
+    buzz(30);
+    if (back) { location.href = B + '/cart/'; return; }
+    draw(); window.scrollTo(0, 0);
+  }
+  function login() {
+    accRoot.innerHTML = tpl('acc-login');
+    var ya = accRoot.querySelector('[data-ya]');
+    ya.addEventListener('click', function () {
+      ya.disabled = true; ya.classList.add('wait');
+      ya.querySelector('span:last-child').textContent = 'Подключаемся к Яндекс ID…';
+      setTimeout(function () { toast('Демо-вход: в рабочей версии откроется окно Яндекс ID', 3200); enter('yandex'); }, 900);
+    });
+    var f = accRoot.querySelector('[data-phone-form]'), err = f.querySelector('.err'), step = 1;
+    f.addEventListener('submit', function (ev) {
+      ev.preventDefault(); err.textContent = '';
+      var ph = f.phone.value.replace(/\D/g, '');
+      if (ph.length < 10) { err.textContent = 'Проверьте номер телефона'; f.phone.focus(); return; }
+      if (step === 1) {
+        step = 2;
+        f.querySelector('[data-code-f]').hidden = false;
+        f.querySelector('[data-code-hint]').hidden = false;
+        f.querySelector('[data-phone-btn]').textContent = 'Войти';
+        f.code.focus(); return;
+      }
+      if (!/^\d{6}$/.test(f.code.value.trim())) { err.textContent = 'Введите 6 цифр кода'; f.code.focus(); return; }
+      enter('phone', ph);
+    });
+  }
+  function roll(el, from, to) {
+    var t0 = performance.now();
+    (function f(now) {
+      var p = Math.min(1, (now - t0) / 800), k = 1 - Math.pow(1 - p, 3);
+      el.textContent = num(from + (to - from) * k);
+      if (p < 1) requestAnimationFrame(f);
+    })(t0);
+  }
+  function draw() {
+    var u = user();
+    if (!u) { login(); return; }
+    accRoot.innerHTML = tpl('acc-home');
+    var $ = function (q) { return accRoot.querySelector(q); }, os = orders();
+    $('[data-who]').textContent = u.via === 'yandex' ? 'Вход через Яндекс ID' : 'Вход по номеру ' + mask(u.phone);
+    $('[data-ya-badge]').hidden = u.via !== 'yandex';
+    $('[data-bal]').textContent = num(u.bal);
+    $('[data-fr]').textContent = num(u.fr);
+    $('[data-on]').textContent = num(os.length);
+    $('[data-bal-t]').textContent = pl(u.bal, 'бонус', 'бонуса', 'бонусов');
+    $('[data-fr-t]').textContent = pl(u.fr, 'друг пришёл', 'друга пришли', 'друзей пришло');
+    $('[data-on-t]').textContent = pl(os.length, 'заказ', 'заказа', 'заказов');
+    $('[data-first]').hidden = !!os.length || !ACC.w;
+    var link = location.origin + B + '/?ref=' + u.code;
+    $('[data-ref-link]').textContent = link.replace(/^https?:\/\//, '');
+    $('[data-ref-code]').textContent = u.code;
+    $('[data-ref-copy]').addEventListener('click', function () { copyText(link, 'Ссылка скопирована — отправьте её другу'); });
+    $('[data-ref-share]').addEventListener('click', function () {
+      var text = 'Дарю −' + fmt(ACC.w) + ' на первую покупку в Е-МИР — оригинальная техника с гарантией';
+      if (navigator.share) navigator.share({title: 'Е-МИР', text: text, url: link}).catch(function () {});
+      else copyText(link, 'Ссылка скопирована — отправьте её другу');
+    });
+    $('[data-ref-demo]').addEventListener('click', function () {
+      var v = user();
+      if (!v) return;
+      var was = v.bal;
+      v.bal += ACC.r; v.fr += 1;
+      v.hist = [{t: Date.now(), v: ACC.r, d: 'Друг получил заказ по вашей ссылке'}].concat(v.hist || []);
+      setUser(v); buzz(40);
+      toast('🎉 +' + num(ACC.r) + ' бонусов: друг получил заказ', 3000);
+      draw();
+      var b = accRoot.querySelector('[data-bal]');
+      roll(b, was, v.bal); b.parentNode.classList.add('pop');
+    });
+    var ST = ['Принят', 'Собираем', 'В пути', 'Выдан'];
+    $('[data-orders]').innerHTML = os.length ? os.slice().reverse().map(function (o) {
+      return '<div class="ord"><div class="ord-h"><b>Заказ ' + esc(o.no) + '</b><b>' + fmt(o.sum) + '</b></div>' +
+        '<span class="muted">' + day(o.t) + ' · ' + num(o.n) + ' шт. · оплата ' + esc(o.pay) + '</span>' +
+        '<div class="ord-st">' + ST.map(function (s, k) { return '<i' + (k <= (o.st || 0) ? ' class="on"' : '') + '><span>' + s + '</span></i>'; }).join('') + '</div></div>';
+    }).join('') : '<p class="muted">Заказов пока нет. <a href="' + B + '/catalog/">Выбрать технику</a></p>';
+    var h = u.hist || [];
+    $('[data-hist]').innerHTML = h.length ? h.map(function (x) {
+      return '<div class="bh"><span>' + esc(x.d) + '<small>' + day(x.t) + '</small></span><b class="' + (x.v > 0 ? 'plus' : 'minus') + '">' +
+        (x.v > 0 ? '+' : '−') + num(Math.abs(x.v)) + '</b></div>';
+    }).join('') : '<p class="muted">Бонусы появятся, когда друг получит заказ по вашей ссылке. 1 бонус = 1 ₽.</p>';
+    $('[data-logout]').addEventListener('click', function () { setUser(null); draw(); window.scrollTo(0, 0); });
+  }
+  draw();
+})();
+
 /* корзина: промокод недели, доставка, рассрочка, оформление (демо — без сервера и списания денег) */
 var cartBox = document.getElementById('cart');
 if (cartBox) (function () {
   var form = document.getElementById('order'), tpl = document.getElementById('row-tpl').innerHTML;
   var FREE = +cartBox.dataset.free || 0, MONTHS = +cartBox.dataset.months || 12;
-  var PR = {}; try { PR = JSON.parse(cartBox.dataset.promo || '{}'); } catch (e) {}
-  var applied = '';
+  var PR = {}; try { PR = JSON.parse(cartBox.dataset.promoCfg || '{}'); } catch (e) {}
+  var applied = '', last = {};
   var saved = ls('emir_promo', '');
   if (saved && form.promo) { form.promo.value = String(saved); applied = String(saved); }
   function promoState(goods) {
@@ -579,9 +743,39 @@ if (cartBox) (function () {
     }).join('');
     var goods = c.reduce(function (s, it) { return s + it.p * it.q; }, 0), n = c.reduce(function (s, it) { return s + it.q; }, 0);
     var pr = promoState(goods), way = form.way.value, del = 0, delT = 'бесплатно';
-    if (way === 'courier') delT = FREE && goods - pr.d >= FREE ? 'бесплатно' : 'по тарифу курьера';
+    // скидка на первую покупку и бонусы из кабинета; все скидки вместе — не больше ACC.x с заказа
+    var u = user(), first = !!u && !orders().length;
+    var room = ACC.x ? Math.max(0, ACC.x - pr.d) : 1e9;
+    var wRaw = first && ACC.w && goods >= ACC.m ? ACC.w : 0, w = Math.min(wRaw, room);
+    room -= w;
+    var bAvail = u && u.bal > 0 && goods >= ACC.m ? Math.min(u.bal, room) : 0;
+    var b = form.usebon && form.usebon.checked ? bAvail : 0;
+    var disc = pr.d + w + b;
+    if (way === 'courier') delT = FREE && goods - disc >= FREE ? 'бесплатно' : 'по тарифу курьера';
     else if (way === 'russia') delT = 'по тарифу СДЭК';
-    var tot = goods - pr.d + del;
+    var tot = goods - disc + del;
+    last = {tot: tot, n: n, b: b};
+    document.getElementById('s-welcome').hidden = !w;
+    document.getElementById('s-welcome-v').textContent = '−' + fmt(w);
+    document.getElementById('s-bon').hidden = !b;
+    document.getElementById('s-bon-v').textContent = '−' + fmt(b);
+    var bu = form.querySelector('[data-bon-use]');
+    bu.hidden = !(u && u.bal > 0);
+    if (!bu.hidden) {
+      bu.querySelector('[data-bon-t]').textContent = goods < ACC.m ? '— в заказе от ' + fmt(ACC.m) :
+        bAvail ? '— у вас ' + num(u.bal) + ', спишем ' + num(bAvail) : '— лимит скидок на заказ исчерпан';
+      form.usebon.disabled = !bAvail;
+    }
+    var nudge = document.querySelector('[data-acc-nudge]');
+    if (nudge) {
+      nudge.hidden = !!u || !ACC.w;
+      nudge.querySelector('[data-an-h]').textContent = 'Скидка −' + fmt(ACC.w) + ' на первую покупку от ' + fmt(ACC.m);
+    }
+    var an = document.getElementById('acc-note'), at = '', ac = '';
+    if (first && ACC.w && goods < ACC.m) at = 'До скидки на первую покупку — ещё ' + fmt(ACC.m - goods);
+    else if (wRaw && w < wRaw) at = 'Скидки вместе — не больше ' + fmt(ACC.x) + ' с заказа';
+    else if (w) { at = '✓ Скидка на первую покупку: −' + fmt(w); ac = 'ok'; }
+    an.textContent = at; an.className = 'promo-note ' + ac;
     document.getElementById('s-n').textContent = n;
     document.getElementById('s-goods').textContent = fmt(goods);
     document.getElementById('s-promo').hidden = !pr.d;
@@ -594,10 +788,10 @@ if (cartBox) (function () {
     document.getElementById('addr').hidden = way === 'pickup';
     var fb = document.querySelector('[data-freebar]');
     if (fb && FREE && way === 'courier') {
-      var left = FREE - (goods - pr.d);
+      var left = FREE - (goods - disc);
       fb.hidden = false; fb.classList.toggle('full', left <= 0);
       fb.querySelector('.fb-t').innerHTML = left > 0 ? 'До бесплатной доставки по Москве — <b>' + fmt(left) + '</b>' : '✓ Доставка по Москве бесплатно';
-      fb.querySelector('i').style.width = Math.min(100, (goods - pr.d) / FREE * 100) + '%';
+      fb.querySelector('i').style.width = Math.min(100, (goods - disc) / FREE * 100) + '%';
     } else if (fb) fb.hidden = true;
   }
   cartBox.addEventListener('click', function (e) {
@@ -623,6 +817,16 @@ if (cartBox) (function () {
     document.getElementById('order-no').textContent = no;
     document.getElementById('done-t').textContent = 'Сумма ' + document.getElementById('s-tot').textContent + ', оплата ' + payT +
       '. Это демо-версия: деньги не списаны, заказ никуда не отправлен.';
+    var os = orders();                        // демо: заказ виден в кабинете, бонусы списываются
+    os.push({no: no, t: Date.now(), sum: last.tot, n: last.n, pay: payT, st: 0});
+    lss(OKEY, os);
+    var u = user();
+    if (u && last.b) {
+      u.bal -= last.b;
+      u.hist = [{t: Date.now(), v: -last.b, d: 'Оплата бонусами, заказ ' + no}].concat(u.hist || []);
+      setUser(u);
+    }
+    document.getElementById('done-acc').hidden = !u;
     save([]); lss('emir_promo', '');
     form.hidden = true; document.getElementById('done').hidden = false; buzz(40);
     window.scrollTo(0, 0);
