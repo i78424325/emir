@@ -1,404 +1,827 @@
-:root{--head:#06173A;--head-t:#FFFFFF;--head-line:#06173A;--head-2:#13295A;--head-2-t:#FFFFFF;--head-hov:#1C3A7A;--head-mute:#9FB6E8;--logo-sub:#8FB4FF;--search-bg:#FFFFFF;--mark:linear-gradient(135deg,#1463FF,#19C8FF);--acc:#1463FF;--acc-d:#0B4FD6;--acc-l:#E6EEFF;--hl:#19C8FF;--hl-t:#06173A;--dark:#06173A;--dark-t:#C9D8F5;--hero:#06173A;--hero-t:#C9D8F5;--glow:rgba(25,200,255,.4);--shadow:rgba(6,23,58,.18);--bg:#F2F5FA;--text:#0B1630;--muted:#4F5E78;--line:#E1E7F0;--line-2:#D5DEEB;--pic:#EEF3FA;--input:#C3CCDA;--na:#8A97AD}
-/* Витрина магазина (цвета — скин, см. shop/skins.py). Сначала телефон, с 900px — компьютер. */
+/* Е-МИР — дизайн-система. Телефон сначала; 600px — большой телефон, 900px — планшет/ноутбук, 1200px — широкий экран.
+   Айдентика: их электрик-синий #0068E8, ночной синий, неоновый лайм для акций, соты-шестигранники (свет в их магазине). */
 :root{
-  /* цвета задаёт скин (shop/skins.py) — он дописывает свой :root в начало этого файла */
-  --card:#FFFFFF;--gift-bg:#FFF1E6;--gift-t:#6A2C00;--gift-i:#C2410C;--ok:#0E7A4D;
-  --r:16px;--r-s:12px;--wrap:1280px;
-  --display:'Russo One',system-ui,sans-serif;--body:Manrope,system-ui,-apple-system,'Segoe UI',sans-serif;
+  --blue:#0068E8;--blue-2:#2E86FF;--blue-d:#0052BC;--blue-l:#EAF2FF;--blue-ll:#F4F8FF;
+  --cyan:#3FE0FF;--volt:#C6FF3A;--volt-d:#9FD600;--volt-l:#F1FFD6;
+  --night:#060A16;--night-2:#0A1330;--night-3:#13235A;
+  --bg:#F3F5F9;--card:#FFFFFF;--text:#0A0F1E;--muted:#5D6880;--line:#E4E8F0;--line-2:#D3D9E4;--pic:#F5F7FA;--input:#C9D1DE;
+  --ok:#0E9F57;--warn:#E5484D;--orange:#FF7A1A;
+  --r:22px;--r-m:16px;--r-s:12px;
+  --display:'Unbounded',system-ui,sans-serif;--body:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+  --sh-s:0 1px 2px rgba(10,15,30,.05),0 6px 18px rgba(10,15,30,.05);
+  --sh-m:0 12px 32px rgba(10,15,30,.10);--sh-l:0 28px 70px rgba(6,10,22,.25);
+  --ease:cubic-bezier(.2,.75,.2,1);
+  /* имена, на которые опираются общие шаблоны (render.py) */
+  --acc:var(--blue);--acc-d:var(--blue-d);--acc-l:var(--blue-l);--hl:var(--volt);--hl-t:var(--night);--na:#98A2B5;
+  --gift-bg:#FFF3E6;--gift-t:#7A3300;--gift-i:#E8620C;--dark:var(--night);--dark-t:#AEB8D0;
+  --hex:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='97' viewBox='0 0 56 97'%3E%3Cpath d='M28 1l26 15v30L28 61 2 46V16zM28 61v36M2 16L-26 1M54 16l28-15' fill='none' stroke='%2363A4FF' stroke-opacity='.22' stroke-width='1.2'/%3E%3C/svg%3E");
 }
-*{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--bg);color:var(--text);font:500 15px/1.45 var(--body)}
-a{color:var(--acc);text-decoration:none}a:hover{color:var(--acc-d)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:500 15px/1.5 var(--body);-webkit-font-smoothing:antialiased;padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+a{color:var(--blue);text-decoration:none}a:hover{color:var(--blue-d)}
 img,svg{display:block}
 button,input,select,textarea{font:inherit;color:inherit}
-h1,h2,h3{margin:0;line-height:1.2}
-.wrap{max-width:var(--wrap);margin:0 auto;padding:0 16px}
-.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+button{cursor:pointer}
+h1,h2,h3{margin:0;line-height:1.15;letter-spacing:-.01em}
+p{margin:0}
+.wrap{max-width:1320px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right))}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .muted{color:var(--muted)}
+.mono{font-family:var(--mono);font-size:.92em}
+.hp{position:absolute;left:-9999px}
+.note{font-size:12.5px;color:var(--muted);line-height:1.45}
+.kick{display:block;font:700 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--blue);margin-bottom:6px}
+[hidden]{display:none!important}
+
+/* --- кнопки, метки, поля --- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:50px;padding:0 22px;border-radius:14px;border:0;
+  background:var(--blue);color:#fff;font:800 15px/1 var(--body);letter-spacing:.01em;text-align:center;white-space:nowrap;
+  transition:transform .15s var(--ease),background .2s,box-shadow .2s;box-shadow:0 6px 16px rgba(0,104,232,.25)}
+.btn:hover{background:var(--blue-d);color:#fff}
+.btn:active{transform:scale(.97)}
+.btn.ghost{background:#fff;color:var(--blue);box-shadow:inset 0 0 0 1.5px var(--blue)}
+.btn.ghost:hover{background:var(--blue-ll)}
+.btn.volt{background:var(--volt);color:var(--night);box-shadow:0 8px 24px rgba(198,255,58,.35)}
+.btn.volt:hover{background:#D4FF5E;color:var(--night)}
+.btn.white{background:#fff;color:var(--night);box-shadow:0 8px 24px rgba(6,10,22,.18)}
+.btn.white:hover{color:var(--blue)}
+.btn.big{height:56px;font-size:16px;border-radius:16px}
+.btn.wide{width:100%}
+.btn[disabled]{opacity:.5;pointer-events:none}
+.btn .i{flex-shrink:0}
+.linkbtn{border:0;background:none;color:var(--blue);font-weight:700;padding:0;text-decoration:underline}
+.pill{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 12px;border-radius:999px;background:rgba(255,255,255,.12);
+  color:#fff;font:700 12px/1 var(--body);letter-spacing:.02em;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
+.pill.volt{background:var(--volt);color:var(--night);box-shadow:none}
+.tag{display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:8px;font:800 11px/1 var(--body);letter-spacing:.02em}
+.tag.new{background:var(--night);color:var(--volt)}
+.tag.hit{background:var(--orange);color:#fff}
+.tag.seal{background:var(--blue-l);color:var(--blue-d)}
+.tag.cond{background:#FFE3C8;color:var(--gift-t)}
+.panel{background:var(--card);border-radius:var(--r);padding:18px;box-shadow:var(--sh-s)}
+.ph2{font:700 17px/1.2 var(--body);margin-bottom:14px}
+.field{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700;color:var(--muted)}
+.field input,.field textarea,.field select{height:52px;border-radius:14px;border:1.5px solid var(--line-2);padding:0 16px;font:600 16px var(--body);
+  color:var(--text);background:#fff;transition:border-color .2s,box-shadow .2s;appearance:none;-webkit-appearance:none}
+.field textarea{height:92px;padding:14px 16px;resize:vertical}
+.field input:focus,.field textarea:focus,.field select:focus{outline:0;border-color:var(--blue);box-shadow:0 0 0 4px rgba(0,104,232,.12)}
+.consent{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--muted);line-height:1.4}
+.consent input{width:22px;height:22px;margin:0;flex-shrink:0;accent-color:var(--blue)}
+.err{color:var(--warn);font-size:14px;font-weight:700}
+.err:empty{display:none}
+.live{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ok);margin-right:8px;vertical-align:middle;
+  box-shadow:0 0 0 0 rgba(14,159,87,.5);animation:live 2s infinite}
+@keyframes live{70%{box-shadow:0 0 0 8px rgba(14,159,87,0)}100%{box-shadow:0 0 0 0 rgba(14,159,87,0)}}
+
+/* --- строка «концепт» --- */
+.concept{background:var(--night);color:#C9D3EA;font-size:12px;font-weight:600}
+.concept .wrap{display:flex;align-items:center;gap:10px;min-height:34px;padding-top:4px;padding-bottom:4px}
+.concept span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.concept a{color:var(--volt);display:inline-flex;align-items:center;gap:2px;white-space:nowrap;font-weight:800}
+.concept button{border:0;background:none;color:#8A97B8;padding:4px;margin-right:-4px}
+
+/* --- общие секции --- */
+main{padding:14px 0 36px}
+.h1{font:700 26px/1.15 var(--display);letter-spacing:-.02em;margin:4px 0 16px}
+.cnt{font:600 15px var(--body);color:var(--muted);vertical-align:middle;letter-spacing:0}
+.sec{margin-top:30px}
+.sec-h{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:14px}
+.sec-h h2{font:700 21px/1.15 var(--display);letter-spacing:-.02em}
+.more-l{display:inline-flex;align-items:center;gap:2px;font-weight:800;font-size:14px;white-space:nowrap}
+.crumbs{font-size:13px;color:var(--muted);display:flex;flex-wrap:nowrap;gap:6px;margin-bottom:10px;overflow-x:auto;scrollbar-width:none;white-space:nowrap}
+.crumbs::-webkit-scrollbar{display:none}
+.crumbs a{color:var(--muted)}.crumbs a:hover{color:var(--blue)}
+.crumbs span:last-child{color:var(--text);overflow:hidden;text-overflow:ellipsis}
+.empty{padding:40px 20px;text-align:center;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:10px}
+.empty .em-i{width:84px;height:84px;border-radius:28px;background:var(--blue-l);color:var(--blue);display:grid;place-items:center}
+.empty .em-h{font:700 20px var(--display);color:var(--text)}
+.empty .btn{margin-top:6px}
+.toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom));transform:translate(-50%,20px);z-index:90;background:var(--night);color:#fff;
+  padding:12px 18px;border-radius:14px;font-weight:700;font-size:14px;opacity:0;pointer-events:none;transition:all .3s var(--ease);
+  box-shadow:var(--sh-l);display:flex;align-items:center;gap:10px;max-width:calc(100% - 32px)}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.toast a{color:var(--volt)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 
 /* --- шапка --- */
-.top{background:var(--head);color:var(--head-t);border-bottom:1px solid var(--head-line);position:sticky;top:0;z-index:30}
-.top .wrap{display:flex;align-items:center;gap:10px;padding-top:10px;padding-bottom:10px;flex-wrap:wrap}
-.logo{display:flex;align-items:center;gap:10px;color:var(--head-t)}
-.logo:hover{color:var(--head-t)}
-.mark{width:40px;height:40px;border-radius:10px;background:var(--mark);display:flex;align-items:center;justify-content:center;font:18px var(--display);color:#fff;flex-shrink:0}
-.logo b{display:block;font:400 19px/1.05 var(--display)}
-.logo small{display:block;font:400 12px/1.1 var(--display);color:var(--logo-sub)}
-.top-actions{display:flex;gap:8px;margin-left:auto}
-.ibtn{width:44px;height:44px;border-radius:12px;background:var(--head-2);color:var(--head-2-t);display:flex;align-items:center;justify-content:center;position:relative;border:0;cursor:pointer}
-.ibtn:hover{color:var(--head-2-t);background:var(--head-hov)}
-.badge{position:absolute;top:-4px;right:-4px;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:var(--hl);color:var(--hl-t);font:800 11px/20px var(--body);text-align:center}
+.top{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.86);backdrop-filter:saturate(1.6) blur(18px);
+  -webkit-backdrop-filter:saturate(1.6) blur(18px);border-bottom:1px solid rgba(10,15,30,.06);transition:box-shadow .25s}
+.top.sc{box-shadow:0 8px 24px rgba(10,15,30,.07)}
+.top-in{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-top:10px;padding-bottom:10px}
+.logo{color:var(--text);flex-shrink:0}
+.lg{display:flex;align-items:center;gap:10px}
+.lg-box{position:relative;font:800 17px/1 var(--display);letter-spacing:.03em;color:var(--blue);padding:7px 10px 6px;
+  border:2px solid currentColor;border-radius:8px}
+.lg-box::after{content:"";position:absolute;right:-5px;top:-5px;width:8px;height:8px;border-radius:2.5px;background:var(--volt);
+  box-shadow:0 0 0 2.5px #fff,0 0 12px rgba(198,255,58,.9)}
+.lg-sub{font:700 10px/1.15 var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);max-width:92px}
+.lg-d .lg-box{color:#fff}.lg-d .lg-box::after{box-shadow:0 0 0 2.5px var(--night),0 0 12px rgba(198,255,58,.9)}
+.lg-d .lg-sub{color:#8C98B8}
+.top-actions{display:flex;gap:6px;margin-left:auto}
+.ibtn{position:relative;width:44px;height:44px;border-radius:14px;display:grid;place-items:center;color:var(--text);background:transparent;border:0}
+.ibtn:hover{background:var(--blue-ll);color:var(--blue)}
+.badge{position:absolute;top:2px;right:0;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:var(--blue);color:#fff;
+  font:800 10.5px/19px var(--body);text-align:center;box-shadow:0 0 0 2px #fff}
 .badge:empty,.badge[data-n="0"]{display:none}
+.badge.pop{animation:pop .45s var(--ease)}
+@keyframes pop{40%{transform:scale(1.5)}}
 .catbtn{display:none}
 .search{order:5;flex:1 1 100%;position:relative}
-.search form{display:flex;align-items:center;gap:8px;height:46px;padding:0 6px 0 14px;border-radius:12px;background:var(--search-bg);color:var(--muted)}
-.search input{border:0;outline:0;flex:1;min-width:0;font:500 16px var(--body);color:var(--text);background:transparent}
-.search button{height:36px;padding:0 14px;border:0;border-radius:9px;background:var(--acc);color:#fff;font-weight:700;cursor:pointer}
-.suggest{position:absolute;left:0;right:0;top:52px;background:#fff;border-radius:12px;box-shadow:0 12px 40px var(--shadow);overflow:hidden;display:none;z-index:40}
-.suggest.on{display:block}
-.suggest a{display:flex;justify-content:space-between;gap:12px;padding:11px 14px;color:var(--text);border-top:1px solid var(--line)}
+.search form{display:flex;align-items:center;gap:10px;height:48px;padding:0 6px 0 14px;border-radius:16px;background:#EEF1F6;color:var(--muted);
+  transition:background .2s,box-shadow .2s}
+.search form:focus-within{background:#fff;box-shadow:0 0 0 2px var(--blue),0 10px 30px rgba(0,104,232,.12)}
+.search input{border:0;outline:0;flex:1;min-width:0;font:600 16px var(--body);color:var(--text);background:transparent;-webkit-appearance:none}
+.search input::placeholder{color:#8792A8;font-weight:500}
+.search button{height:38px;padding:0 16px;border:0;border-radius:12px;background:var(--blue);color:#fff;font-weight:800;font-size:14px}
+.suggest{position:absolute;left:0;right:0;top:56px;background:#fff;border-radius:18px;box-shadow:var(--sh-l);overflow:hidden;display:none;z-index:50}
+.suggest.on{display:block;animation:sg .2s var(--ease)}
+@keyframes sg{from{opacity:0;transform:translateY(-6px)}}
+.suggest a{display:flex;align-items:center;gap:12px;padding:10px 14px;color:var(--text);border-top:1px solid var(--line);font-size:14px}
 .suggest a:first-child{border-top:0}
-.suggest a:hover,.suggest a.act{background:var(--acc-l)}
-.suggest b{white-space:nowrap}
-.phone-top{display:none;color:var(--head-t);font-weight:800;white-space:nowrap}
-.phone-top:hover{color:var(--head-t)}
-.phone-top small{display:block;font-weight:500;color:var(--head-mute);font-size:12px}
+.suggest a:hover,.suggest a.act{background:var(--blue-ll)}
+.suggest a span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.suggest b{white-space:nowrap;font:600 13px var(--display)}
+.suggest .th{width:40px;height:40px;object-fit:contain;flex-shrink:0;border-radius:10px;background:var(--pic);mix-blend-mode:multiply}
+.suggest i.th{display:block}
+.phone-top{display:none;color:var(--text);font-weight:800;white-space:nowrap;line-height:1.2}
+.phone-top small{display:block;font-weight:600;color:var(--muted);font-size:11.5px}
+.mega,.navrow{display:none}
 
-/* меню каталога (компьютер) */
-.mega{display:none}
-.navrow{display:none}
+/* --- нижнее меню --- */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:45;padding:6px max(8px,env(safe-area-inset-left)) calc(6px + env(safe-area-inset-bottom));
+  background:rgba(255,255,255,.88);backdrop-filter:saturate(1.6) blur(20px);-webkit-backdrop-filter:saturate(1.6) blur(20px);
+  border-top:1px solid rgba(10,15,30,.07);display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:end}
+.tabbar a{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;height:52px;
+  font-size:10.5px;font-weight:700;color:#7A859C;border-radius:14px}
+.tabbar a[aria-current]{color:var(--blue)}
+.tabbar a[aria-current] .i{stroke-width:2.4}
+.tabbar .badge{top:3px;right:auto;left:calc(50% + 5px)}
+.tab-sale{color:var(--text)!important}
+.ts-ring{display:grid;place-items:center;width:52px;height:52px;margin-top:-22px;border-radius:18px;background:var(--night);color:var(--volt);
+  font:800 13px/1 var(--display);letter-spacing:-.02em;box-shadow:0 10px 24px rgba(6,10,22,.35),inset 0 0 0 1.5px rgba(198,255,58,.55);
+  position:relative;overflow:hidden}
+.ts-ring::after{content:"";position:absolute;inset:-40%;background:linear-gradient(115deg,transparent 40%,rgba(198,255,58,.35) 50%,transparent 60%);
+  animation:beam 3.4s linear infinite}
 
-/* --- нижнее меню (телефон) --- */
-.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:30;height:64px;padding-bottom:env(safe-area-inset-bottom);background:#fff;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
-.tabbar a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:11px;font-weight:600;color:var(--muted);position:relative}
-.tabbar a[aria-current]{color:var(--acc);font-weight:800}
-.tabbar .badge{top:6px;right:auto;left:calc(50% + 4px)}
-body{padding-bottom:72px}
+/* --- шторки (рассрочка, 1 клик, фильтры) --- */
+.sheet-bg{position:fixed;inset:0;z-index:70;background:rgba(6,10,22,.45);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);animation:fade .2s}
+@keyframes fade{from{opacity:0}}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:80;max-height:88vh;overflow:auto;background:#fff;border-radius:26px 26px 0 0;
+  padding:8px 18px calc(18px + env(safe-area-inset-bottom));box-shadow:var(--sh-l);animation:up .32s var(--ease)}
+@keyframes up{from{transform:translateY(100%)}}
+.sheet::before{content:"";display:block;width:40px;height:5px;border-radius:9px;background:var(--line-2);margin:4px auto 10px}
+.sh-h{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.sh-h b{font:700 20px var(--display)}
+.sh-x{width:40px;height:40px;border-radius:12px;border:0;background:var(--bg);display:grid;place-items:center}
+.sh-b{display:grid;gap:14px}
+body.lock{overflow:hidden}
 
-/* --- общие блоки --- */
-main{padding:16px 0 32px}
-.crumbs{font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
-.crumbs a{color:var(--muted)}
-.crumbs a:hover{color:var(--acc)}
-.h1{font-size:24px;font-weight:800}
-.sec{margin-top:24px}
-.sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:12px}
-.sec-h h2{font-size:20px;font-weight:800}
-.sec-h a{font-weight:700;font-size:14px}
-.panel{background:var(--card);border-radius:var(--r);padding:16px}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 20px;border-radius:var(--r-s);border:0;background:var(--acc);color:#fff;font:800 16px var(--body);cursor:pointer;text-align:center}
-.btn:hover{background:var(--acc-d);color:#fff}
-.btn.ghost{background:#fff;color:var(--acc);border:2px solid var(--acc)}
-.btn.ghost:hover{background:var(--acc-l);color:var(--acc-d)}
-.btn.wide{width:100%}
-.btn[disabled]{opacity:.55;cursor:default}
-.chip{flex-shrink:0;display:inline-flex;align-items:center;height:40px;padding:0 16px;border-radius:999px;border:1px solid var(--line-2);background:#fff;color:var(--text);font-weight:600;font-size:14px;cursor:pointer;white-space:nowrap}
-.chip:hover{border-color:var(--acc);color:var(--text)}
-.chip.on{background:var(--dark);border-color:var(--dark);color:#fff}
-.chips{display:flex;gap:8px;overflow-x:auto;margin:0 -16px;padding:2px 16px 4px;scrollbar-width:none}
-.chips::-webkit-scrollbar{display:none}
-.tag{display:inline-flex;align-items:center;font-size:12px;font-weight:800;padding:4px 10px;border-radius:999px}
-.tag.new{background:var(--hl);color:var(--hl-t)}
-.tag.seal{background:var(--acc-l);color:var(--acc-d)}
-.tag.cond{background:#FFD7B0;color:var(--gift-t)}
-.gift{background:var(--gift-bg);color:var(--gift-t);border-radius:var(--r-s);padding:12px;display:flex;gap:10px;align-items:center;font-size:14px;line-height:1.35}
+/* --- сторис --- */
+.stories{margin:4px calc(-1 * max(16px,env(safe-area-inset-left))) 14px;overflow-x:auto;scrollbar-width:none}
+.stories::-webkit-scrollbar{display:none}
+.st-row{display:flex;gap:12px;padding:2px max(16px,env(safe-area-inset-left))}
+.st{border:0;background:none;padding:0;display:flex;flex-direction:column;align-items:center;gap:6px;width:72px;flex-shrink:0;color:var(--text)}
+.st-ring{width:70px;height:70px;border-radius:50%;padding:2.5px;background:conic-gradient(from 210deg,var(--blue),var(--cyan),var(--volt),var(--blue));
+  transition:transform .2s var(--ease)}
+.st:active .st-ring{transform:scale(.94)}
+.st-ring.volt{background:conic-gradient(from 0deg,var(--volt),#FFD84D,#7CFF6B,var(--volt))}
+.st-ring img{width:100%;height:100%;border-radius:50%;background:#fff;object-fit:contain;padding:9px;border:2.5px solid #fff}
+.st.seen .st-ring{background:var(--line-2)}
+.st-t{font:700 11.5px/1.1 var(--body);text-align:center}
 
-/* --- главная --- */
-.hero{background:var(--hero);border-radius:20px;padding:22px;display:flex;align-items:center;gap:12px;overflow:hidden;color:#fff}
-.hero-t{flex:1;display:flex;flex-direction:column;gap:10px;align-items:flex-start}
-.hero h1{font:400 28px/1.1 var(--display)}
-.hero p{margin:0;color:var(--hero-t);font-size:15px}
-.hero p b{color:#fff;font-size:21px}
-.hero-art{width:120px;height:180px;position:relative;flex-shrink:0}
-.hero-art i{position:absolute;width:80px;height:164px;border-radius:20px;border:3px solid #1B1F2A}
-.hero-art i:first-child{left:0;top:12px;background:#B9D6E3;box-shadow:0 0 44px var(--glow)}
-.hero-art i:last-child{left:38px;top:0;background:#6B2235}
-.trust{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}
-.trust div{background:#fff;border-radius:14px;padding:12px 10px;display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700;line-height:1.25}
-.cats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.cats a{background:#fff;border-radius:14px;min-height:96px;padding:12px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--text);text-align:center;font-size:13px;font-weight:700;line-height:1.2}
-.cats a:hover{box-shadow:0 0 0 2px var(--acc) inset}
-.cats a.disc{background:var(--gift-bg);color:var(--gift-t)}
-.steps{margin:0;padding:0;list-style:none;display:grid;gap:14px}
-.steps li{display:flex;gap:12px;align-items:flex-start}
-.steps span{width:32px;height:32px;border-radius:999px;background:var(--acc-l);color:var(--acc);font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+/* просмотр сторис */
+.sv{position:fixed;inset:0;z-index:100;background:#03060E;color:#fff;display:flex;justify-content:center;animation:fade .2s}
+.sv-in{position:relative;width:100%;max-width:460px;height:100%;overflow:hidden;background:radial-gradient(120% 80% at 70% 20%,#123A9E 0%,#071030 50%,#03060E 100%)}
+.sv-bars{position:absolute;top:calc(10px + env(safe-area-inset-top));left:12px;right:12px;display:flex;gap:4px;z-index:3}
+.sv-bars i{flex:1;height:3px;border-radius:3px;background:rgba(255,255,255,.25);overflow:hidden}
+.sv-bars i b{display:block;height:100%;width:0;background:#fff}
+.sv-bars i.done b{width:100%}
+.sv-head{position:absolute;top:calc(22px + env(safe-area-inset-top));left:12px;right:8px;display:flex;align-items:center;gap:10px;z-index:3}
+.sv-head img{width:34px;height:34px;border-radius:50%;background:#fff;object-fit:contain;padding:4px}
+.sv-head b{flex:1;font:700 14px var(--body)}
+.sv-x{width:44px;height:44px;border:0;background:none;color:#fff;display:grid;place-items:center}
+.sv-tap{position:absolute;top:0;bottom:0;z-index:2;border:0;background:transparent}
+.sv-prev{left:0;width:32%}.sv-next{right:0;width:68%}
+.sv-body{position:absolute;inset:calc(80px + env(safe-area-inset-top)) 18px calc(28px + env(safe-area-inset-bottom));display:flex;flex-direction:column;
+  justify-content:flex-end;gap:12px;z-index:2;pointer-events:none}
+.sv-body a,.sv-body button{pointer-events:auto}
+.sv-img{flex:1;min-height:0;display:grid;place-items:center}
+.sv-img img{max-width:92%;max-height:100%;object-fit:contain;filter:drop-shadow(0 30px 50px rgba(0,0,0,.45));animation:svin .6s var(--ease)}
+.sv-img.wb img{background:#fff;border-radius:28px;padding:18px;max-height:92%}
+@keyframes svin{from{opacity:0;transform:translateY(24px) scale(.96)}}
+.sv-k{font:700 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--volt)}
+.sv-h{font:800 30px/1.08 var(--display);letter-spacing:-.02em}
+.sv-h.huge{font-size:54px;color:var(--volt)}
+.sv-p{font-size:15px;color:#C6D2EE;line-height:1.45}
+.sv-price{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.sv-price b{font:700 30px var(--display)}
+.sv-price span{background:var(--volt);color:var(--night);font-weight:800;font-size:13px;padding:5px 10px;border-radius:10px}
+.sv-ic{width:76px;height:76px;border-radius:24px;background:rgba(255,255,255,.1);display:grid;place-items:center;color:var(--volt);margin-bottom:auto;margin-top:30%}
+.sv-body .btn{align-self:stretch}
 
-/* --- каталог --- */
+/* --- главный слайдер --- */
+.hero{position:relative}
+.h-track{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;border-radius:28px;overscroll-behavior-x:contain}
+.h-track::-webkit-scrollbar{display:none}
+.hs{position:relative;flex:0 0 100%;scroll-snap-align:center;aspect-ratio:4/5;max-height:560px;border-radius:28px;overflow:hidden;color:#fff;isolation:isolate}
+.h-dots{display:flex;justify-content:center;gap:6px;margin-top:10px}
+.h-dots button{width:7px;height:7px;padding:0;border:0;border-radius:9px;background:var(--line-2);transition:width .3s var(--ease),background .3s}
+.h-dots button[aria-current=true]{width:24px;background:var(--blue)}
+.hs-fx{position:absolute;inset:0;z-index:-1;overflow:hidden}
+.hs-fx i{position:absolute;display:block}
+.hx{inset:0;background:var(--hex);background-size:56px 97px;-webkit-mask-image:radial-gradient(ellipse 80% 70% at 65% 35%,#000 10%,transparent 75%);
+  mask-image:radial-gradient(ellipse 80% 70% at 65% 35%,#000 10%,transparent 75%);animation:hx 7s ease-in-out infinite}
+@keyframes hx{50%{opacity:.55}}
+.beam{inset:-60% -30%;background:linear-gradient(115deg,transparent 42%,rgba(140,210,255,.16) 50%,transparent 58%);animation:beam 6s linear infinite}
+@keyframes beam{from{transform:translateX(-35%)}to{transform:translateX(35%)}}
+.orb{border-radius:50%;filter:blur(46px)}
+.o1{width:70%;height:55%;right:-18%;top:18%;background:#1D6BFF;opacity:.75}
+.o2{width:55%;height:40%;left:-20%;bottom:-8%;background:#3FE0FF;opacity:.35}
+.o3{width:80%;height:60%;right:-25%;top:10%;background:#B2324D;opacity:.55}
+.o4{width:70%;height:60%;right:-20%;bottom:-10%;background:#3FE0FF;opacity:.4}
+.o5{width:75%;height:60%;right:-20%;top:15%;background:#E0894A;opacity:.5}
+.hs-sale{background:radial-gradient(130% 90% at 80% 10%,#0E3BA8 0%,#071233 46%,#050913 100%)}
+.hs-new{background:radial-gradient(120% 90% at 85% 20%,#5A1426 0%,#1A0B14 55%,#0A0609 100%)}
+.hs-trade{background:radial-gradient(120% 100% at 90% 90%,#0A7FE0 0%,#0B3A9C 45%,#081A4D 100%)}
+.hs-dyson{background:radial-gradient(120% 90% at 85% 25%,#5E3A1E 0%,#21140C 55%,#0C0806 100%)}
+.hs-in{position:relative;height:100%;padding:18px 18px 20px;display:flex;flex-direction:column;z-index:1}
+.hs-kick{display:flex;align-items:center;justify-content:space-between;gap:8px;position:relative;z-index:4}
+.hs-big{position:absolute;left:14px;right:14px;top:56px;margin:0;font:800 clamp(80px,27vw,170px)/.82 var(--display);letter-spacing:-.07em;
+  background:linear-gradient(180deg,#fff 15%,rgba(140,200,255,.55) 95%);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 28px rgba(63,224,255,.35));white-space:nowrap;z-index:1}
+.hs-big span:nth-child(2){-webkit-text-fill-color:var(--volt);color:var(--volt)}
+.hs-art{position:absolute;left:0;right:0;bottom:116px;height:45%;z-index:2;pointer-events:none}
+.hs-art img{position:absolute;width:auto;max-width:none;filter:drop-shadow(0 22px 26px rgba(0,0,0,.45))}
+.f1{height:100%;right:4%;bottom:0;transform:rotate(-9deg);z-index:4;animation:fl 6s ease-in-out infinite}
+.f3{height:80%;right:32%;bottom:6%;transform:rotate(9deg);z-index:3;animation:fl 7s ease-in-out -2s infinite}
+.f2{height:50%;left:-3%;bottom:8%;transform:rotate(-14deg);z-index:2;animation:fl 6.5s ease-in-out -1s infinite}
+.f4{height:32%;left:27%;bottom:-4%;z-index:5;animation:fl 5.5s ease-in-out -3s infinite}
+@keyframes fl{50%{translate:0 -8px}}
+.hs-offer{margin-top:auto;display:flex;align-items:center;gap:12px;position:relative;z-index:5}
+.tagp{position:relative;background:var(--volt);color:var(--night);border-radius:16px;padding:9px 16px 10px 20px;transform:rotate(-4deg);
+  box-shadow:0 12px 30px rgba(198,255,58,.35);display:flex;flex-direction:column;gap:2px;animation:wob 4s ease-in-out infinite}
+.tagp::before{content:"";position:absolute;left:8px;top:50%;width:6px;height:6px;margin-top:-3px;border-radius:50%;background:#0A1330}
+.tagp small{font:800 9.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;opacity:.75}
+.tagp b{font:800 27px/1 var(--display);letter-spacing:-.03em;white-space:nowrap}
+@keyframes wob{50%{transform:rotate(-2deg) translateY(-2px)}}
+.hs-offer p{font:700 14px/1.3 var(--body)}
+.hs-offer p span{display:block;font:700 11px/1.4 var(--mono);color:var(--volt);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+.hs-cta{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;margin-top:14px;position:relative;z-index:5}
+.hs-cta .btn{height:52px;padding:0 12px;font-size:14.5px;min-width:0}
+.hs-cta:has(>:only-child){grid-template-columns:1fr}
+.code{display:inline-flex;align-items:center;gap:8px;height:52px;padding:0 12px;border-radius:14px;border:1.5px dashed rgba(198,255,58,.75);
+  background:rgba(255,255,255,.08);color:#fff;font:700 14px var(--body);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);white-space:nowrap}
+.code b{font:800 16px var(--mono);color:var(--volt);letter-spacing:.06em}
+.code.ok{border-style:solid;border-color:var(--volt)}
+.hs-h{font:800 28px/1.04 var(--display);letter-spacing:-.03em;margin-top:14px;position:relative;z-index:3;max-width:94%}
+.hs-p{margin-top:8px;font-size:14px;line-height:1.4;color:#D7E0F5;position:relative;z-index:3;max-width:92%;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.hs-p b{color:#fff;font:700 17px var(--display)}
+.hs-new .hs-art,.hs-trade .hs-art,.hs-dyson .hs-art{bottom:72px;height:37%}
+@media (max-width:389px){.code svg{display:none}.hs-cta .btn .i{display:none}}
+.hs-new .hs-cta,.hs-trade .hs-cta,.hs-dyson .hs-cta{margin-top:auto}
+.n1{height:96%;right:6%;bottom:0;transform:rotate(-7deg);z-index:2;animation:fl 6s ease-in-out infinite}
+.n2{height:84%;right:40%;bottom:4%;transform:rotate(8deg);animation:fl 7s ease-in-out -2s infinite}
+.t1{height:80%;left:8%;bottom:4%;transform:rotate(-10deg);opacity:.85}
+.t2{height:98%;right:8%;bottom:0;transform:rotate(8deg);animation:fl 6s ease-in-out infinite}
+.t-arrow{position:absolute;left:44%;top:40%;width:52px;height:52px;border-radius:50%;background:var(--volt);color:var(--night);display:grid;place-items:center;z-index:3;box-shadow:0 10px 24px rgba(0,0,0,.35)}
+.d1{height:100%;right:14%;bottom:0;transform:rotate(-6deg);animation:fl 6s ease-in-out infinite}
+.d2{height:92%;right:46%;bottom:2%;transform:rotate(9deg)}
+
+/* --- лента под слайдером --- */
+.fresh{display:inline-flex;align-items:center;margin:14px 0 0;padding:8px 14px;border-radius:999px;background:#fff;box-shadow:var(--sh-s);
+  font-size:12.5px;font-weight:700;color:var(--muted)}
+.cd{display:inline-flex;align-items:center;gap:2px;height:30px;padding:0 10px;border-radius:999px;background:rgba(6,10,22,.55);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);color:#fff;white-space:nowrap}
+.cd b{font:700 13px/1 var(--mono);font-variant-numeric:tabular-nums}
+.cd i{font:600 11px/1 var(--mono);font-style:normal;color:#8FA3CC;margin:0 1px}
+.cd i:first-of-type{margin-right:6px}
+.cd.sm{background:var(--night);color:var(--volt);height:28px}
+.cd.xs{background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:none;height:auto;padding:0;color:inherit;margin-left:auto}
+.cd.xs b{font-size:12px}.cd.xs i{color:inherit;opacity:.6}
+
+.qcats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 8px}
+.qc{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;font:700 11.5px/1.2 var(--body);color:var(--text)}
+.qc-i{width:100%;max-width:74px;aspect-ratio:1;border-radius:22px;background:#fff;display:grid;place-items:center;color:var(--blue);box-shadow:var(--sh-s);
+  transition:transform .2s var(--ease),box-shadow .2s}
+.qc:hover .qc-i{transform:translateY(-3px);box-shadow:var(--sh-m)}
+.qc-utsenka .qc-i{color:var(--orange)}
+.rail{display:grid;grid-auto-flow:column;grid-auto-columns:46%;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;
+  margin:0 calc(-1 * max(16px,env(safe-area-inset-left)));padding:4px max(16px,env(safe-area-inset-left)) 12px;scroll-padding:0 16px}
+.rail::-webkit-scrollbar{display:none}
+.rail>*{scroll-snap-align:start}
+.sec-h .cd{margin-top:10px}
+.brands .br-row{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 calc(-1 * max(16px,env(safe-area-inset-left)));padding:2px max(16px,env(safe-area-inset-left)) 8px}
+.br-row::-webkit-scrollbar{display:none}
+.br{flex-shrink:0;height:52px;padding:0 22px;border-radius:16px;background:#fff;box-shadow:var(--sh-s);display:grid;place-items:center;
+  font:700 15px var(--display);color:var(--text);letter-spacing:-.01em;white-space:nowrap}
+.br:hover{color:var(--blue)}
+.duo{display:grid;gap:10px}
+.duo-c{position:relative;overflow:hidden;min-height:156px;border-radius:24px;padding:18px;display:flex;flex-direction:column;gap:6px;color:#fff;isolation:isolate}
+.duo-c:hover{color:#fff}
+.duo-c .kick{color:var(--volt)}
+.duo-c b{font:700 19px/1.15 var(--display);max-width:62%;letter-spacing:-.02em}
+.duo-c>span:not(.kick){font-size:13px;color:#C6D2EE;max-width:58%}
+.duo-c>span b{font:inherit;color:#fff;font-weight:800}
+.duo-trade{background:linear-gradient(135deg,#082A78 0%,#0068E8 100%)}
+.duo-inst{background:linear-gradient(135deg,#0A1330 0%,#22306A 100%)}
+.duo-c img{position:absolute;right:-4px;bottom:-24px;height:90%;width:auto;transform:rotate(-10deg);z-index:-1;filter:drop-shadow(0 16px 24px rgba(0,0,0,.4))}
+.duo-inst img{height:auto;width:48%;right:-14px;bottom:12px;transform:rotate(-4deg)}
+.why{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.why>div{background:#fff;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:6px;box-shadow:var(--sh-s)}
+.why svg{color:var(--blue);margin-bottom:4px}
+.why b{font:800 14.5px/1.25 var(--body)}
+.why span{font-size:12.5px;color:var(--muted);line-height:1.4}
+.tgjoin{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;background:linear-gradient(120deg,#0A1330,#13235A);
+  color:#fff;border-radius:24px;padding:18px 20px;position:relative;overflow:hidden}
+.tgjoin::after{content:"";position:absolute;inset:0;background:var(--hex);background-size:42px 73px;opacity:.5;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000);mask-image:linear-gradient(90deg,transparent,#000);pointer-events:none}
+.tgjoin>div{display:flex;gap:12px;align-items:center;position:relative;z-index:1}
+.tgjoin>div>svg{color:#4FB2FF;flex-shrink:0}
+.tgjoin b{display:block;font:700 16px var(--display)}
+.tgjoin small{display:block;color:#AEB8D0;font-size:12.5px;margin-top:2px}
+.tgjoin .btn{position:relative;z-index:1}
+
+/* --- карточка товара в списке --- */
+.pc{position:relative;background:#fff;border-radius:22px;padding:8px 8px 12px;display:flex;flex-direction:column;gap:8px;box-shadow:var(--sh-s);
+  transition:transform .25s var(--ease),box-shadow .25s;min-width:0}
+.pc:hover{transform:translateY(-3px);box-shadow:var(--sh-m)}
+.pc.hide{display:none}
+.pc .pic{position:relative;aspect-ratio:1;border-radius:16px;background:var(--pic);display:grid;place-items:center;overflow:hidden}
+.pc .pic img{width:84%;height:84%;object-fit:contain;mix-blend-mode:multiply;transition:transform .4s var(--ease)}
+.pc:hover .pic img{transform:scale(1.05)}
+.pc .pic svg{max-width:70%;max-height:70%}
+.pc .pic .tag{position:absolute;top:8px;left:8px}
+.fav{position:absolute;top:8px;right:8px;z-index:2;width:34px;height:34px;border-radius:50%;border:0;background:rgba(255,255,255,.9);color:#8A94A8;
+  display:grid;place-items:center;box-shadow:0 2px 8px rgba(10,15,30,.08);transition:color .2s,transform .2s var(--ease)}
+.fav:active{transform:scale(.88)}
+.fav.on,.b-mini [data-fav].on{color:#FF3B5C}
+.fav.on svg,.b-mini [data-fav].on svg{fill:currentColor}
+.pic-w{position:relative}
+.pc-b{display:flex;flex-direction:column;gap:5px;padding:0 4px;min-width:0}
+.pc .nm{font:700 13.5px/1.3 var(--body);color:var(--text);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:35px}
+.pc .nm:hover{color:var(--blue)}
+.dots{display:flex;gap:4px;align-items:center}
+.dots i{width:12px;height:12px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(10,15,30,.15)}
+.dots small{font-size:11px;color:var(--muted);font-weight:700}
+.pc-p{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 8px}
+.price{font:700 17px/1.1 var(--display);letter-spacing:-.02em;white-space:nowrap}
+.cmp-t{font-size:11px;font-weight:800;color:var(--ok)}
+.pp{display:inline-flex;align-self:flex-start;max-width:100%;overflow:hidden;align-items:center;gap:4px;padding:3px 8px;border-radius:8px;background:var(--volt-l);
+  color:#3A5200;font-size:11.5px;font-weight:700;white-space:nowrap;box-shadow:inset 0 0 0 1px rgba(159,214,0,.45)}
+.pp b{font:700 12px var(--display);color:var(--night)}
+.inst{font-size:11.5px;color:var(--muted);font-weight:700}
+.add{position:absolute;right:8px;bottom:8px;z-index:2;width:40px;height:40px;border-radius:14px;border:0;background:var(--blue);color:#fff;display:grid;place-items:center;
+  box-shadow:0 6px 14px rgba(0,104,232,.3);transition:transform .15s var(--ease),background .2s}
+.add:hover{background:var(--blue-d);color:#fff}
+.add:active{transform:scale(.9)}
+.add.done{background:var(--ok)}
+
+/* --- сетки и каталог --- */
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.more{margin:18px auto 0;display:flex}
 .layout{display:block}
 .side{display:none}
-.tools{display:flex;gap:8px;margin:12px 0}
-.tools select,.tools label{height:44px;border-radius:var(--r-s);border:1px solid var(--line-2);background:#fff;padding:0 12px;font-weight:700;font-size:14px;display:flex;align-items:center;gap:8px}
-.tools select{flex:1;min-width:0}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.pc{background:#fff;border-radius:var(--r);padding:10px;display:flex;flex-direction:column;gap:8px;position:relative}
-.pc.hide{display:none}
-.pc .pic{height:150px;border-radius:var(--r-s);background:var(--pic);display:flex;align-items:center;justify-content:center;position:relative}
-.pc .pic .tag{position:absolute;top:8px;left:8px}
-.pc .nm{font-size:14px;font-weight:700;line-height:1.3;color:var(--text);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;min-height:54px}
-.pc .nm:hover{color:var(--acc)}
-.dots{display:flex;gap:4px;flex-wrap:wrap}
-.dots i{width:14px;height:14px;border-radius:999px;border:1px solid var(--input)}
-.price{font-size:19px;font-weight:800;letter-spacing:-.2px}
-.card-price{font-size:12px;color:var(--muted)}
-.ask{font-size:15px;font-weight:800;color:var(--muted)}
-.pc .btn{height:44px;font-size:15px;margin-top:auto}
-.more{margin:16px auto 0;display:flex}
-.empty{padding:40px 16px;text-align:center;color:var(--muted)}
-
-/* --- карточка товара --- */
-.prod{display:flex;flex-direction:column;gap:12px}
-.gal{background:#fff;border-radius:var(--r);height:320px;display:flex;align-items:center;justify-content:center}
-.prod h1{font-size:22px;font-weight:800;line-height:1.25}
-.opts{display:flex;flex-direction:column;gap:16px}
-.opt-t{font-size:14px;font-weight:700;margin-bottom:8px}
-.opt-t span{color:var(--muted);font-weight:600}
-.opt-v{display:flex;flex-wrap:wrap;gap:6px}
-.opt-v a{min-height:44px;min-width:64px;padding:8px 14px;border-radius:var(--r-s);border:1px solid var(--line-2);background:#fff;color:var(--text);font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px}
-.opt-v a:hover{border-color:var(--acc)}
-.opt-v a.on{border:2px solid var(--acc);background:var(--acc-l);font-weight:800}
-.opt-v a.na{color:var(--na);border-style:dashed}
-.opt-v a i{width:20px;height:20px;border-radius:999px;border:1px solid var(--input);flex-shrink:0}
-.buy .price{font-size:32px}
-.buy-acts{display:flex;flex-direction:column;gap:8px;margin-top:12px}
-.info{display:grid;gap:14px}
-.info div{display:flex;gap:12px;align-items:flex-start;font-size:14px;line-height:1.4}
-.info svg{flex-shrink:0;color:var(--acc)}
-.specs{margin:0;display:grid;grid-template-columns:minmax(110px,40%) 1fr;gap:10px 12px;font-size:14px}
-.specs dt{color:var(--muted)}
-.specs dd{margin:0;font-weight:600}
-.buybar{position:fixed;left:0;right:0;bottom:64px;z-index:25;background:#fff;border-top:1px solid var(--line);padding:10px 16px;display:flex;align-items:center;gap:12px}
-.buybar .price{font-size:20px}
-.buybar .btn{margin-left:auto;height:48px}
-body.has-buybar{padding-bottom:140px}
-
-/* --- корзина --- */
-.cart-row{display:flex;gap:12px;background:#fff;border-radius:var(--r);padding:12px}
-.cart-row .pic{width:84px;height:84px;border-radius:var(--r-s);background:var(--pic);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.qty{display:flex;align-items:center;border:1px solid var(--line-2);border-radius:var(--r-s)}
-.qty button{width:40px;height:40px;border:0;background:transparent;font:700 20px var(--body);cursor:pointer}
-.qty span{min-width:24px;text-align:center;font-weight:800}
-.rm{border:0;background:transparent;color:var(--muted);font-size:13px;cursor:pointer;padding:6px 0}
-.rm:hover{color:#B42318}
-.choice{display:grid;gap:8px}
-.choice label{min-height:64px;border-radius:14px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:#fff;border:1px solid var(--line-2);cursor:pointer}
-.choice label:has(input:checked){background:var(--acc-l);border:2px solid var(--acc)}
-.choice input{width:22px;height:22px;accent-color:var(--acc);flex-shrink:0}
-.choice b{display:block;font-size:15px}
-.choice small{color:var(--muted);font-size:13px}
-.pay{grid-template-columns:repeat(2,minmax(0,1fr))}
-.field{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700;color:var(--muted)}
-.field input,.field textarea{height:48px;border-radius:var(--r-s);border:1px solid var(--input);padding:0 14px;font:500 16px var(--body);color:var(--text);background:#fff}
-.field textarea{height:80px;padding:12px 14px;resize:vertical}
-.field input:focus,.field textarea:focus{outline:2px solid var(--acc);outline-offset:0;border-color:var(--acc)}
-.consent{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--muted);line-height:1.4}
-.consent input{width:22px;height:22px;margin:0;flex-shrink:0;accent-color:var(--acc)}
-.sum{display:grid;gap:8px;font-size:15px}
-.sum div{display:flex;justify-content:space-between;gap:12px}
-.sum .tot{font-size:21px;font-weight:800;padding-top:8px;border-top:1px solid var(--line)}
-.err{color:#B42318;font-size:14px;font-weight:600}
-.done{text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px;padding:48px 8px}
-.done .ok{width:88px;height:88px;border-radius:999px;background:var(--acc-l);display:flex;align-items:center;justify-content:center;color:var(--acc)}
-.hp{position:absolute;left:-9999px}
-
-/* --- подвал --- */
-.foot{background:var(--dark);color:var(--dark-t);padding:28px 0 24px;font-size:14px}
-.foot a{color:#fff}
-.foot-g{display:grid;gap:20px}
-.foot h3{color:#fff;font-size:15px;margin-bottom:10px}
-.foot ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
-.foot .tel{font-size:22px;font-weight:800;color:#fff}
-.prose{background:#fff;border-radius:var(--r);padding:20px;line-height:1.6}
-.prose h2{font-size:18px;margin:18px 0 8px}
-
-
-/* --- фото --- */
-.pc .pic img{max-width:88%;max-height:88%;width:auto;height:auto;object-fit:contain;mix-blend-mode:multiply}
-.gal img{max-width:92%;max-height:92%;width:auto;height:auto;object-fit:contain}
-.cart-row .pic img{max-width:76px;max-height:76px;mix-blend-mode:multiply}
-
-.hero-photo{width:130px;height:180px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#fff;border-radius:18px;padding:10px;box-shadow:0 0 48px var(--glow)}
-.hero-photo img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain}
-@media (min-width:900px){.hero-photo{width:320px;height:300px}}
-
-/* --- фильтры --- */
-.cnt{font:600 16px var(--body);color:var(--muted);vertical-align:middle}
-.fbtn{height:44px;border-radius:var(--r-s);border:1px solid var(--line-2);background:#fff;padding:0 12px;font-weight:700;font-size:14px;display:flex;align-items:center;gap:6px;cursor:pointer;flex-shrink:0}
-.fbtn [data-fcount]:not(:empty){min-width:20px;height:20px;border-radius:999px;background:var(--acc);color:#fff;font-size:12px;line-height:20px;text-align:center;padding:0 6px}
-.tools .pr{white-space:nowrap}
 .left{display:contents}
-.filters{display:none;position:fixed;inset:0;z-index:60;background:#fff;overflow:auto;padding:0 16px 96px}
-.filters.on{display:block}
-.f-h{position:sticky;top:0;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line);z-index:1}
-.f-h b{font-size:18px}
-.f-h .ibtn{background:var(--bg);color:var(--text);font-size:24px}
-.filters fieldset{border:0;margin:0;padding:14px 0;border-bottom:1px solid var(--line)}
-.filters legend{font-weight:800;font-size:15px;padding:0;margin-bottom:8px}
-.f-vals{display:grid;gap:2px}
-.f-vals.long{max-height:260px;overflow:auto;padding-right:10px}
-.f-vals label{display:flex;align-items:center;gap:10px;min-height:40px;font-size:15px;cursor:pointer}
-.f-vals input{width:20px;height:20px;accent-color:var(--acc);flex-shrink:0;margin:0}
-.f-vals small{margin-left:auto;color:var(--muted);font-size:13px}
+.chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 calc(-1 * max(16px,env(safe-area-inset-left)));padding:2px max(16px,env(safe-area-inset-left)) 6px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;display:inline-flex;align-items:center;height:40px;padding:0 16px;border-radius:999px;background:#fff;color:var(--text);
+  font-weight:700;font-size:14px;white-space:nowrap;box-shadow:var(--sh-s)}
+.chip:hover{color:var(--blue)}
+.chip.on{background:var(--night);color:#fff}
+.tools{display:flex;gap:8px;margin:12px 0;align-items:center}
+.tools select,.tools label,.fbtn{height:44px;border-radius:14px;border:0;background:#fff;padding:0 14px;font-weight:700;font-size:14px;
+  display:flex;align-items:center;gap:8px;box-shadow:var(--sh-s);color:var(--text)}
+.tools select{flex:1;min-width:0;-webkit-appearance:none;appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235D6880' stroke-width='2' fill='none'/%3E%3C/svg%3E") no-repeat right 14px center;padding-right:34px}
+.tools .pr{white-space:nowrap}
+.tools .pr input{accent-color:var(--blue);width:18px;height:18px;margin:0}
+.fbtn{flex-shrink:0;cursor:pointer}
+.fbtn [data-fcount]:not(:empty){min-width:20px;height:20px;border-radius:999px;background:var(--blue);color:#fff;font-size:12px;line-height:20px;text-align:center;padding:0 6px}
+.nores{margin:16px 0}
+.filters{display:none;position:fixed;inset:0;z-index:85;background:#fff;overflow:auto;padding:0 18px 110px}
+.filters.on{display:block;animation:up .3s var(--ease)}
+.f-h{position:sticky;top:0;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--line);z-index:1}
+.f-h b{font:700 20px var(--display)}
+.f-h .ibtn{background:var(--bg);font-size:24px}
+.filters fieldset{border:0;margin:0;padding:16px 0;border-bottom:1px solid var(--line)}
+.filters legend{font-weight:800;font-size:15px;padding:0;margin-bottom:10px}
+.f-vals{display:flex;flex-wrap:wrap;gap:8px}
+.f-vals.long{max-height:300px;overflow:auto}
+.f-vals label{position:relative;display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 14px;border-radius:12px;background:var(--bg);font-size:14px;font-weight:600;cursor:pointer}
+.f-vals label:has(input:checked){background:var(--night);color:#fff}
+.f-vals input{position:absolute;opacity:0;pointer-events:none}
+.f-vals small{color:var(--muted);font-size:12px}
+.f-vals label:has(input:checked) small{color:#AEB8D0}
 .f-price{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.f-price input{height:44px;border-radius:var(--r-s);border:1px solid var(--input);padding:0 12px;font:500 16px var(--body);min-width:0}
-.f-acts{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:12px 16px calc(12px + env(safe-area-inset-bottom));display:grid;grid-template-columns:1fr 2fr;gap:8px}
-.linkbtn{border:0;background:none;color:var(--acc);font-weight:700;cursor:pointer;padding:0}
+.f-price input{height:48px;border-radius:14px;border:1.5px solid var(--line-2);padding:0 14px;font:600 16px var(--body);min-width:0}
+.f-acts{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:12px 18px calc(12px + env(safe-area-inset-bottom));display:grid;grid-template-columns:1fr 2fr;gap:8px;z-index:2}
 body.fopen{overflow:hidden}
 
-/* --- тексты, вопросы, карта --- */
-.prose ul{padding-left:20px}
-.prose details{border-bottom:1px solid var(--line);padding:12px 0}
-.prose summary{font-weight:800;cursor:pointer;font-size:16px}
-.prose details p{margin:8px 0 0}
-.big-tel{font-size:26px;font-weight:800;margin:0}
-.map{width:100%;height:320px;border:0;border-radius:var(--r);margin-top:12px}
-.seo{margin-top:24px;font-size:14px;color:var(--muted)}
-.seo h2{color:var(--text);margin-top:0}
-.about p{margin:0 0 10px;line-height:1.6}
-.about p:last-child{margin-bottom:0}
+/* --- тексты и служебные страницы --- */
+.prose{background:#fff;border-radius:var(--r);padding:22px;line-height:1.65;box-shadow:var(--sh-s);font-size:15.5px}
+.prose h2{font:700 18px/1.25 var(--display);margin:24px 0 10px;letter-spacing:-.01em}
+.prose h2:first-child{margin-top:0}
+.prose p+p{margin-top:10px}
+.prose ul,.prose ol{padding-left:20px;margin:8px 0}
+.prose li{margin:4px 0}
+.prose .lead{font-size:17px;line-height:1.55}
+.prose details{border-bottom:1px solid var(--line);padding:4px 0}
+.prose summary{cursor:pointer;font-weight:800;padding:12px 0;list-style:none;display:flex;justify-content:space-between;gap:12px}
+.prose summary::after{content:"+";font:700 20px var(--display);color:var(--blue)}
+.prose details[open] summary::after{content:"−"}
+.prose details p{padding:0 0 12px;color:var(--muted)}
+.cards3{display:grid;gap:10px;margin:6px 0 10px}
+.cards3>div{background:var(--blue-ll);border-radius:18px;padding:16px}
+.cards3 svg{color:var(--blue);margin-bottom:8px}
+.cards3 h2{margin:0 0 6px;font-size:16px}
+.cards3 p{font-size:14px;color:var(--muted);line-height:1.5}
+.ct-list{list-style:none;padding:0!important;display:grid;gap:10px}
+.ct-list li{display:flex;align-items:center;gap:10px;margin:0!important}
+.ct-list svg{color:var(--blue);flex-shrink:0}
+.big-tel{font:700 26px var(--display)}
+.seo{margin-top:28px;background:transparent;box-shadow:none;padding:0;color:var(--muted);font-size:14px}
+.seo h2{font-size:16px;color:var(--text)}
+.ti-grid{display:grid;gap:16px}
+.ti-form{display:grid;gap:12px;align-content:start}
+.ti-form h2{font:700 18px var(--display);margin:0}
+.ti-steps{counter-reset:s;list-style:none;padding:0!important;display:grid;gap:10px}
+.ti-steps li{counter-increment:s;display:flex;gap:12px;align-items:flex-start;margin:0!important}
+.ti-steps li::before{content:counter(s);flex-shrink:0;width:28px;height:28px;border-radius:9px;background:var(--night);color:var(--volt);font:700 13px/28px var(--display);text-align:center}
+.ti-accept{list-style:none;padding:0!important;display:flex;flex-wrap:wrap;gap:6px}
+.ti-accept li{margin:0!important;padding:6px 12px;border-radius:10px;background:var(--bg);font-weight:700;font-size:13.5px}
+.req-done{background:var(--volt-l);border-radius:14px;padding:12px 14px;font-size:14px}
+.chk-res{padding:10px 12px;border-radius:12px;background:#FFF0F0;color:var(--warn);font-weight:700;font-size:14px}
+.chk-res.ok{background:#E9FBF1;color:var(--ok)}
+#search-results .pc .muted{font-size:12px}
 
-/* ===================== компьютер ===================== */
+/* --- страница товара --- */
+.prod{display:flex;flex-direction:column;gap:14px}
+.p-gal{min-width:0}
+.gal{background:#fff;border-radius:26px;aspect-ratio:1;max-height:520px;display:grid;place-items:center;box-shadow:var(--sh-s);overflow:hidden;position:relative}
+.gal>img{width:86%;height:86%;object-fit:contain}
+.gal.multi{display:block;aspect-ratio:auto;max-height:none;padding-bottom:12px}
+.g-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+.g-track::-webkit-scrollbar{display:none}
+.g-s{flex:0 0 100%;aspect-ratio:1;max-height:500px;display:grid;place-items:center;scroll-snap-align:center}
+.g-s img{width:84%;height:84%;object-fit:contain}
+.g-thumbs{display:flex;gap:8px;justify-content:center;padding:0 12px;overflow-x:auto;scrollbar-width:none}
+.g-thumbs a{flex-shrink:0;width:54px;height:54px;border-radius:14px;background:var(--pic);display:grid;place-items:center;box-shadow:inset 0 0 0 1.5px transparent;transition:box-shadow .2s}
+.g-thumbs a.on{box-shadow:inset 0 0 0 2px var(--blue)}
+.g-thumbs img{width:42px;height:42px;object-fit:contain;mix-blend-mode:multiply}
+.p-main{display:flex;flex-direction:column;gap:14px;min-width:0}
+.p-tags{display:flex;gap:6px;flex-wrap:wrap}
+.prod h1{font:800 22px/1.22 var(--body);letter-spacing:-.015em}
+.buy{background:#fff;border-radius:24px;padding:18px;box-shadow:var(--sh-s);display:flex;flex-direction:column;gap:10px}
+.b-price{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 12px}
+.buy .price{font:700 32px/1 var(--display);letter-spacing:-.03em}
+.old{color:var(--muted);font-size:17px;text-decoration-color:var(--warn)}
+.drop{background:#E9FBF1;color:var(--ok);font-weight:800;font-size:12px;padding:4px 8px;border-radius:8px}
+.b-card{font-size:13px;color:var(--muted);font-weight:600;margin-top:-4px}
+.b-promo,.b-inst{display:flex;align-items:center;gap:10px;width:100%;min-height:50px;padding:10px 14px;border-radius:16px;border:0;text-align:left;font-size:14px;font-weight:600}
+.b-promo{background:var(--night);color:#fff;position:relative;overflow:hidden}
+.b-promo::after{content:"";position:absolute;inset:-50%;background:linear-gradient(115deg,transparent 45%,rgba(198,255,58,.18) 50%,transparent 55%);animation:beam 4s linear infinite}
+.b-promo svg{color:var(--volt);flex-shrink:0}
+.b-promo b{color:var(--volt);font-family:var(--display);font-weight:700}
+.b-promo .cd{position:relative;z-index:1}
+.b-inst{background:var(--blue-ll);color:var(--text)}
+.b-inst svg:first-child{color:var(--blue)}
+.b-inst span{flex:1}
+.b-inst b{font-family:var(--display);font-weight:700}
+.b-acts{display:grid;grid-template-columns:1fr;gap:8px;margin-top:4px}
+.b-mini{display:flex;gap:6px}
+.b-mini button{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;height:42px;border:0;border-radius:12px;background:var(--bg);font-weight:700;font-size:13px;color:var(--text)}
+.b-fresh{font-size:12.5px;font-weight:700;color:var(--muted)}
+.gift{background:var(--gift-bg);color:var(--gift-t);border-radius:16px;padding:12px 14px;display:flex;gap:10px;align-items:center;font-size:13.5px;line-height:1.35}
+.gift svg{color:var(--gift-i);flex-shrink:0}
+.opts{display:flex;flex-direction:column;gap:16px;background:#fff;border-radius:24px;padding:18px;box-shadow:var(--sh-s)}
+.opt-t{font-size:14px;font-weight:800;margin-bottom:10px}
+.opt-t span{color:var(--muted);font-weight:600}
+.opt-v{display:flex;flex-wrap:wrap;gap:8px}
+.opt-v a{min-height:46px;min-width:66px;padding:8px 14px;border-radius:14px;background:var(--bg);color:var(--text);font-weight:700;font-size:14px;
+  display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:inset 0 0 0 1.5px transparent;transition:box-shadow .2s}
+.opt-v a:hover{box-shadow:inset 0 0 0 1.5px var(--line-2)}
+.opt-v a.on{background:#fff;box-shadow:inset 0 0 0 2px var(--blue);color:var(--blue-d)}
+.opt-v a i{width:22px;height:22px;border-radius:50%;flex-shrink:0;box-shadow:inset 0 0 0 1px rgba(10,15,30,.18)}
+.cmp-box{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:16px;background:#E9FBF1;font-size:13px}
+.cmp-save{color:var(--ok);font-weight:800;font-size:14px}
+.cmp-box a{color:inherit;text-decoration:underline}
+.used-box{display:grid;gap:10px}
+.u-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.u-h .muted{margin-left:auto;font-size:13px}
+.u-list{display:grid;gap:6px}
+.u-list a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:var(--bg);color:var(--text);font-size:13.5px}
+.u-nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.u-p{text-align:right;white-space:nowrap}.u-p b{font-family:var(--display);font-weight:700}.u-p small{display:block;color:var(--ok);font-weight:800}
+.u-more{font-weight:800;font-size:14px}
+.u-note{font-size:12px}
+.new-box{display:flex;align-items:center;gap:12px;color:var(--text)}
+.new-box .u-go{margin-left:auto;font-size:20px;color:var(--blue)}
+.ph{background:#fff;border-radius:24px;padding:18px;box-shadow:var(--sh-s)}
+.ph-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.ph h2{font:700 17px var(--body)}
+.ph-badge{background:#E9FBF1;color:var(--ok);font-weight:800;font-size:12px;padding:4px 8px;border-radius:8px}
+.ph svg{width:100%;height:120px}
+.ph-axis{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:6px}
+.ph-note{font-size:12.5px;margin-top:8px}
+.info{display:grid;gap:14px}
+.info>div{display:flex;gap:12px;align-items:flex-start;font-size:14px;line-height:1.4}
+.info svg{flex-shrink:0;color:var(--blue)}
+.specs{margin:0;display:grid;grid-template-columns:minmax(110px,42%) 1fr;font-size:14px}
+.specs dt,.specs dd{padding:10px 0;border-bottom:1px solid var(--line)}
+.specs dt{color:var(--muted)}
+.specs dd{margin:0;font-weight:700}
+.about p{line-height:1.6;color:#2B3346}.about p+p{margin-top:10px}
+.buybar{position:fixed;left:0;right:0;bottom:calc(64px + env(safe-area-inset-bottom));z-index:44;padding:10px max(16px,env(safe-area-inset-left));
+  display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.92);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border-top:1px solid rgba(10,15,30,.06);transform:translateY(120%);transition:transform .35s var(--ease)}
+.buybar.on{transform:none}
+.buybar .price{font-size:19px}
+.buybar small{display:block;font-size:11.5px;color:var(--muted);font-weight:700;margin-top:2px}
+.buybar .bb-pp{color:#3A5200}
+.buybar .btn{margin-left:auto;height:48px;padding:0 26px}
+body.has-buybar{padding-bottom:calc(140px + env(safe-area-inset-bottom))}
+.inst-t{width:100%;border-collapse:collapse;font-size:15px}
+.inst-t th{text-align:left;font-size:12px;color:var(--muted);font-weight:700;padding:0 0 8px}
+.inst-t td{padding:12px 0;border-top:1px solid var(--line)}
+.inst-t td:last-child,.inst-t th:last-child{text-align:right}
+.inst-t b{font-family:var(--display);font-weight:700}
+.oc-item{display:flex;align-items:center;gap:12px;padding:10px;border-radius:16px;background:var(--bg)}
+.oc-item img,.oc-item svg{width:64px;height:64px;object-fit:contain;mix-blend-mode:multiply;flex-shrink:0}
+.oc-item b{display:block;font-size:14px;line-height:1.3}
+.oc-item span span{font:700 15px var(--display)}
+.oc-form{display:grid;gap:12px}
+.oc-done{background:var(--volt-l);border-radius:16px;padding:16px;font-size:14.5px;line-height:1.5}
+.oc-done b{font-family:var(--display)}
+
+/* --- корзина --- */
+.cart-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+.cart-layout>*{min-width:0}
+.cart-main{display:flex;flex-direction:column;gap:12px;min-width:0}
+.cart-items{display:flex;flex-direction:column;gap:8px}
+.cart-row{display:flex;gap:12px;background:#fff;border-radius:22px;padding:12px;box-shadow:var(--sh-s)}
+.cart-row .pic{width:88px;height:88px;border-radius:16px;background:var(--pic);display:grid;place-items:center;flex-shrink:0}
+.cart-row .pic img{width:76px;height:76px;object-fit:contain;mix-blend-mode:multiply}
+.cr-b{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
+.cr-n{color:var(--text);font-weight:700;line-height:1.3;font-size:14px}
+.cr-f{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.cr-s{font:700 16px var(--display)}
+.qty{display:flex;align-items:center;background:var(--bg);border-radius:12px}
+.qty button{width:38px;height:38px;border:0;background:transparent;font:700 20px var(--body)}
+.qty span{min-width:22px;text-align:center;font-weight:800}
+.rm{align-self:flex-start;border:0;background:transparent;color:var(--muted);font-size:13px;font-weight:600;padding:0}
+.rm:hover{color:var(--warn)}
+.free-bar{background:#fff;border-radius:18px;padding:12px 14px;box-shadow:var(--sh-s)}
+.fb-t{font-size:13.5px;font-weight:700;margin-bottom:8px}
+.fb-t b{color:var(--blue)}
+.fb-l{height:8px;border-radius:9px;background:var(--bg);overflow:hidden}
+.fb-l i{display:block;height:100%;width:0;border-radius:9px;background:linear-gradient(90deg,var(--blue),var(--cyan));transition:width .6s var(--ease)}
+.free-bar.full .fb-l i{background:linear-gradient(90deg,var(--ok),var(--volt))}
+.choice{display:grid;gap:8px}
+.choice label{min-height:62px;border-radius:16px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--bg);cursor:pointer;
+  box-shadow:inset 0 0 0 1.5px transparent;transition:box-shadow .2s,background .2s}
+.choice label:has(input:checked){background:#fff;box-shadow:inset 0 0 0 2px var(--blue)}
+.choice input{width:22px;height:22px;accent-color:var(--blue);flex-shrink:0;margin:0}
+.choice b{display:flex;align-items:center;gap:8px;font-size:15px}
+.choice b svg{color:var(--blue)}
+.choice small{display:block;color:var(--muted);font-size:12.5px;margin-top:2px}
+.pay{grid-template-columns:repeat(2,minmax(0,1fr))}
+.pay label{align-items:flex-start;flex-direction:row}
+#addr{margin-top:12px}
+.contacts{display:grid;gap:12px}
+.sum{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;font-size:15px}
+.sum>div{display:flex;justify-content:space-between;gap:12px}
+.sum .minus{color:var(--ok);font-weight:800}
+.promo-in{display:flex;gap:8px}
+.promo-in input{flex:1;min-width:0;width:0;height:48px;border-radius:14px;border:1.5px dashed var(--line-2);padding:0 14px;font:700 16px var(--mono);letter-spacing:.06em;text-transform:uppercase}
+.promo-in .btn{height:48px;padding:0 16px}
+.promo-note{font-size:13px;font-weight:700}
+.promo-note.ok{color:var(--ok)}.promo-note.bad{color:var(--warn)}
+.sum .tot{font:700 22px var(--display);padding-top:12px;border-top:1px solid var(--line);letter-spacing:-.02em}
+.s-inst{font-size:12.5px;color:var(--muted);font-weight:700;margin-top:-4px}
+.done{text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px;padding:40px 18px}
+.done .ok{width:96px;height:96px;border-radius:32px;background:var(--volt);color:var(--night);display:grid;place-items:center;animation:pop .6s var(--ease)}
+.done h2{font:700 24px var(--display)}
+.done-steps{list-style:none;padding:0;margin:4px 0;display:grid;gap:8px;text-align:left;max-width:420px}
+.done-steps li{background:var(--bg);border-radius:14px;padding:12px 14px;font-size:14px}
+
+/* --- страница акции --- */
+.pr-hero{position:relative;overflow:hidden;border-radius:28px;color:#fff;isolation:isolate;
+  background:radial-gradient(130% 90% at 80% 10%,#0E3BA8 0%,#071233 46%,#050913 100%);margin-bottom:16px}
+.pr-in{position:relative;padding:22px 20px 24px;display:flex;flex-direction:column;gap:14px;align-items:flex-start}
+.pr-hero h1{font:800 30px/1.05 var(--display);letter-spacing:-.03em;max-width:640px}
+.pr-hero p{color:#C6D2EE;max-width:520px}
+.pr-row{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.code.big{height:58px;font-size:15px}.code.big b{font-size:19px}
+.pr-cd small{display:block;font:700 10.5px var(--mono);text-transform:uppercase;letter-spacing:.1em;color:#8FA3CC;margin-bottom:6px}
+.cd.lg{height:auto;padding:8px 12px;border-radius:14px}
+.cd.lg b{font-size:22px}
+.pr-steps{list-style:none;padding:0;margin:4px 0 0;display:flex;flex-wrap:wrap;gap:8px}
+.pr-steps li{display:flex;align-items:center;gap:8px;padding:8px 12px 8px 8px;border-radius:12px;background:rgba(255,255,255,.08);font-size:13px;font-weight:700}
+.pr-steps b{width:24px;height:24px;border-radius:8px;background:var(--volt);color:var(--night);display:grid;place-items:center;font:700 12px var(--display)}
+
+/* --- «Как работает система» --- */
+.sys-hero{position:relative;overflow:hidden;border-radius:28px;color:#fff;isolation:isolate;
+  background:radial-gradient(130% 100% at 85% 0%,#0E3BA8 0%,#071233 45%,#04070F 100%)}
+.sys-in{position:relative;padding:24px 20px 22px;display:flex;flex-direction:column;gap:14px;align-items:flex-start}
+.sys-hero h1{font:800 32px/1.04 var(--display);letter-spacing:-.035em}
+.sys-hero p{color:#C6D2EE;font-size:15.5px;line-height:1.55;max-width:640px}
+.sys-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%;margin-top:6px}
+.sys-stats div{background:rgba(255,255,255,.07);border-radius:16px;padding:12px 14px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+.sys-stats b{display:block;font:700 24px/1.1 var(--display);color:var(--volt);letter-spacing:-.02em}
+.sys-stats span{font-size:12px;color:#AEB8D0;font-weight:600}
+.sys-demo{display:grid;gap:18px;align-items:center}
+.sd-txt h2{font:700 24px/1.15 var(--display);letter-spacing:-.02em;margin-bottom:8px}
+.sd-txt p{color:var(--muted);margin-bottom:14px}
+.phone{position:relative;width:100%;max-width:390px;margin:0 auto;border-radius:44px;background:#0B0F1A;padding:12px;box-shadow:var(--sh-l),inset 0 0 0 2px #26304A}
+.ph-top{display:flex;align-items:center;gap:10px;padding:14px 14px 12px;background:#17212B;border-radius:32px 32px 0 0;color:#fff}
+.ph-av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--blue-2),var(--blue-d));display:grid;place-items:center}
+.ph-top b{display:block;font-size:15px}.ph-top small{color:#7D8B99;font-size:12px}
+.chat{height:560px;overflow-y:auto;scrollbar-width:none;padding:12px 10px 16px;border-radius:0 0 32px 32px;display:flex;flex-direction:column;gap:8px;
+  background:#0E1621 linear-gradient(180deg,rgba(255,255,255,.02),transparent);scroll-behavior:smooth}
+.chat::-webkit-scrollbar{display:none}
+.msg{max-width:86%;padding:8px 12px 9px;border-radius:16px;font-size:13.5px;line-height:1.4;white-space:pre-line;animation:msg .35s var(--ease)}
+@keyframes msg{from{opacity:0;transform:translateY(10px) scale(.98)}}
+.msg.in{align-self:flex-end;background:#2B5278;color:#fff;border-bottom-right-radius:6px}
+.msg.bot{align-self:flex-start;background:#182533;color:#E8EEF5;border-bottom-left-radius:6px}
+.msg .fwd{display:block;font-size:12px;font-weight:700;color:#7FC3FF;margin-bottom:3px;border-left:2px solid #7FC3FF;padding-left:7px}
+.msg .mh{display:block;font-weight:800;margin-bottom:4px;color:#fff}
+.msg.card{min-width:72%}
+.msg.order{box-shadow:inset 0 0 0 1.5px rgba(198,255,58,.55)}
+.msg.order .mh{color:var(--volt)}
+.kb{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin-top:4px;align-self:flex-start;width:86%}
+.kb span{background:#22303F;color:#CFE3F7;border-radius:10px;padding:8px 4px;text-align:center;font-size:12px;font-weight:700;transition:background .3s,transform .2s}
+.kb span.hit{background:var(--blue);color:#fff;transform:scale(.96)}
+.typing{align-self:flex-start;background:#182533;border-radius:16px;padding:12px 14px;display:flex;gap:4px}
+.typing i{width:7px;height:7px;border-radius:50%;background:#7D8B99;animation:ty 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes ty{40%{transform:translateY(-4px);background:#C6D2EE}}
+.pbar{height:6px;border-radius:6px;background:#22303F;overflow:hidden;margin-top:8px}
+.pbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue-2),var(--volt));transition:width 1.8s var(--ease)}
+.flow{list-style:none;padding:0;margin:0;display:grid;gap:10px;counter-reset:f}
+.flow li{position:relative;counter-increment:f;background:#fff;border-radius:20px;padding:16px 16px 16px 66px;box-shadow:var(--sh-s);display:flex;flex-direction:column;gap:4px}
+.fl-i{position:absolute;left:14px;top:16px;width:40px;height:40px;border-radius:13px;background:var(--night);color:var(--volt);display:grid;place-items:center}
+.flow b{font:700 15px var(--display)}
+.flow li>span:last-child{font-size:13.5px;color:var(--muted);line-height:1.45}
+.feats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.feats div{background:#fff;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:6px;box-shadow:var(--sh-s)}
+.feats svg{color:var(--blue);margin-bottom:4px}
+.feats b{font-size:14px;line-height:1.25}
+.feats span{font-size:12.5px;color:var(--muted);line-height:1.45}
+.vs{background:#fff;border-radius:24px;box-shadow:var(--sh-s);overflow:hidden}
+.vs-h,.vs-r{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:10px;padding:12px 16px;align-items:center}
+.vs-h{background:var(--night);color:#AEB8D0;font:700 11px var(--mono);text-transform:uppercase;letter-spacing:.08em}
+.vs-h span:last-child{color:var(--volt)}
+.vs-r{border-top:1px solid var(--line);font-size:13px}
+.vs-r b{font-size:13.5px}
+.vs-r span:nth-child(2){color:var(--muted)}
+.vs-r span:last-child{display:flex;gap:6px;align-items:flex-start;font-weight:700}
+.vs-r span:last-child svg{color:var(--ok);flex-shrink:0;margin-top:1px}
+.sys-cta{display:flex;flex-direction:column;gap:16px;background:linear-gradient(120deg,#0A1330,#0B3A9C);color:#fff;border-radius:28px;padding:24px 20px}
+.sys-cta h2{font:700 22px/1.15 var(--display)}
+.sys-cta p{color:#C6D2EE;margin-top:6px}
+.sc-b{display:flex;gap:8px;flex-wrap:wrap}
+
+/* --- подвал --- */
+.foot{margin-top:40px;background:var(--night);color:#AEB8D0;padding:32px 0 24px;font-size:14px;position:relative;overflow:hidden}
+.foot::before{content:"";position:absolute;inset:0;background:var(--hex);background-size:56px 97px;opacity:.35;
+  -webkit-mask-image:radial-gradient(ellipse 60% 80% at 100% 0%,#000,transparent 70%);mask-image:radial-gradient(ellipse 60% 80% at 100% 0%,#000,transparent 70%)}
+.foot .wrap{position:relative}
+.foot a{color:#fff}.foot a:hover{color:var(--volt)}
+.foot-top{display:flex;flex-direction:column;gap:12px;padding-bottom:22px;border-bottom:1px solid rgba(255,255,255,.08)}
+.foot-top p{font:600 12px var(--mono);letter-spacing:.04em;color:#7F8BA8}
+.socs{display:flex;flex-wrap:wrap;gap:8px}
+.soc{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 14px;border-radius:12px;background:rgba(255,255,255,.07);font-weight:700;font-size:13.5px}
+.soc svg{color:#4FB2FF}
+.foot-g{display:grid;gap:22px;padding:22px 0}
+.foot h3{color:#fff;font:700 14px var(--display);margin-bottom:12px}
+.foot ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.foot ul.cols{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:16px}
+.pays li{display:flex;align-items:center;gap:8px;color:#C6D2EE}
+.pays svg{color:var(--volt)}
+.foot-b{display:flex;flex-wrap:wrap;gap:8px 18px;padding-top:18px;border-top:1px solid rgba(255,255,255,.08);font-size:12.5px;color:#7F8BA8}
+.foot-b a{color:#AEB8D0}
+
+/* --- большие телефоны и планшет --- */
+@media (min-width:600px){
+  .grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  .rail{grid-auto-columns:31%}
+  .qcats{grid-template-columns:repeat(6,minmax(0,1fr))}
+  .why,.feats{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .duo{grid-template-columns:1fr 1fr}
+  .cards3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .sys-stats{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .hs{aspect-ratio:16/11}
+  .hs-big{font-size:clamp(110px,22vw,190px)}
+  .hs-art{left:30%}
+  .b-acts{grid-template-columns:1.3fr 1fr}
+  .foot-g{grid-template-columns:2fr 1fr 1fr}
+}
+/* --- iPad горизонтально, ноутбук, компьютер --- */
 @media (min-width:900px){
   body,body.has-buybar{padding-bottom:0}
   .tabbar,.buybar{display:none}
-  .wrap{padding:0 24px}
-  .top .wrap{flex-wrap:nowrap;gap:16px;padding-top:14px;padding-bottom:14px}
-  .logo b{font-size:22px}.logo small{font-size:14px}.mark{width:46px;height:46px;font-size:20px}
-  .catbtn{display:inline-flex;height:46px;padding:0 18px;border-radius:12px;background:var(--acc);color:#fff;font-weight:800;align-items:center;gap:8px;border:0;cursor:pointer}
-  .catbtn:hover{background:var(--acc-d);color:#fff}
-  .search{order:0;flex:1}
+  .toast{bottom:28px}
+  .top-in{flex-wrap:nowrap;gap:14px;padding-top:12px;padding-bottom:12px}
+  .lg-box{font-size:19px}
+  .catbtn{display:inline-flex;align-items:center;gap:8px;height:46px;padding:0 18px;border:0;border-radius:14px;background:var(--night);color:#fff;font-weight:800;font-size:14.5px}
+  .catbtn:hover,.catbtn[aria-expanded=true]{background:var(--blue)}
+  .search{order:0;flex:1 1 auto}
   .phone-top{display:block}
-  .top-actions{margin-left:0}
-  .navrow{display:block;background:#fff;border-bottom:1px solid var(--line)}
-  .navrow .wrap{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
-  .navrow a{padding:12px 12px;color:var(--text);font-weight:700;font-size:14px;white-space:nowrap;border-bottom:3px solid transparent}
-  .navrow a:hover,.navrow a[aria-current]{color:var(--acc);border-bottom-color:var(--acc)}
-  .navrow a.disc{color:var(--gift-i)}
-  .mega{position:absolute;left:0;right:0;top:100%;background:#fff;color:var(--text);box-shadow:0 20px 40px var(--shadow);border-radius:0 0 16px 16px}
-  .mega.on{display:block}
-  .mega .wrap{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px 24px;padding-top:20px;padding-bottom:24px}
-  .mega h3{font-size:15px;margin-bottom:6px}
-  .mega h3 a{color:var(--text)}
-  .mega ul{list-style:none;margin:0;padding:0;display:grid;gap:4px}
-  .mega li a{color:var(--muted);font-size:14px}
-  .mega li a:hover,.mega h3 a:hover{color:var(--acc)}
-  main{padding:24px 0 48px}
-  .h1{font-size:30px}
-  .hero{padding:40px 48px;border-radius:24px}
-  .hero h1{font-size:48px}
-  .hero p{font-size:18px}.hero p b{font-size:28px}
-  .hero-art{width:200px;height:260px}
-  .hero-art i{width:120px;height:240px;border-radius:28px}
-  .hero-art i:last-child{left:70px}
-  .trust{gap:16px}
-  .trust div{flex-direction:row;align-items:center;padding:16px;font-size:15px}
-  .cats{grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
-  .cats a{min-height:120px;font-size:14px}
-  .grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
-  .pc{padding:14px}
-  .pc .pic{height:190px}
-  .layout{display:grid;grid-template-columns:240px 1fr;gap:24px;align-items:start}
-  .side{display:block;background:#fff;border-radius:var(--r);padding:16px;position:sticky;top:96px}
-  .side h2{font-size:16px;margin-bottom:10px}
-  .side ul{list-style:none;margin:0;padding:0;display:grid;gap:2px}
-  .side a{display:flex;justify-content:space-between;padding:8px 10px;border-radius:10px;color:var(--text);font-size:14px;font-weight:600}
-  .side a:hover{background:var(--bg)}
-  .side a.on{background:var(--acc-l);color:var(--acc-d);font-weight:800}
-  .side a span{color:var(--muted);font-weight:500}
-  .layout .chips{display:none}
+  .navrow{display:block;border-top:1px solid rgba(10,15,30,.06)}
+  .navrow .wrap{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding-top:6px;padding-bottom:6px}
+  .navrow .wrap::-webkit-scrollbar{display:none}
+  .navrow a{flex-shrink:0;padding:8px 12px;border-radius:10px;color:var(--text);font-weight:700;font-size:13.5px;white-space:nowrap}
+  .navrow a:hover,.navrow a[aria-current]{background:var(--blue-ll);color:var(--blue)}
+  .navrow .nr-x{color:var(--blue)}
+  .mega{position:absolute;left:0;right:0;top:100%;background:#fff;box-shadow:var(--sh-l);border-radius:0 0 28px 28px;max-height:72vh;overflow:auto}
+  .mega.on{display:block;animation:sg .2s var(--ease)}
+  .mega .wrap{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px 28px;padding-top:24px;padding-bottom:28px}
+  .mega h3 a{display:flex;align-items:center;gap:8px;color:var(--text);font:700 14px var(--display);margin-bottom:8px}
+  .mega h3 svg{color:var(--blue)}
+  .mega ul{list-style:none;margin:0;padding:0 0 0 28px;display:grid;gap:4px}
+  .mega li a{color:var(--muted);font-size:13.5px;font-weight:600}
+  .mega li a:hover{color:var(--blue)}
+  main{padding-top:20px}
+  .h1{font-size:34px}
+  .sec{margin-top:44px}
+  .sec-h h2{font-size:28px}
+  .stories{margin-bottom:18px}
+  .st{width:84px}.st-ring{width:80px;height:80px}
+  .h-track{gap:0}
+  .hs{aspect-ratio:auto;height:460px;max-height:none}
+  .hs-in{padding:40px 48px 40px}
+  .hs-kick{justify-content:flex-start;gap:14px}
+  .hs-big{position:relative;left:auto;right:auto;top:auto;margin:26px 0 0;font-size:150px;width:auto}
+  .hs-art{left:44%;right:0;top:24px;bottom:24px;height:auto}
+  .f1{right:6%}.f3{right:38%}.f2{left:2%}.f4{left:30%}
+  .hs-offer{margin-top:auto;max-width:44%}
+  .tagp b{font-size:38px}
+  .hs-offer p{font-size:16px}
+  .hs-cta{max-width:44%}
+  .hs-h{font-size:54px;max-width:50%}
+  .hs-p{font-size:17px;max-width:44%;-webkit-line-clamp:3}
+  .hs-new .hs-art,.hs-trade .hs-art,.hs-dyson .hs-art{top:24px;bottom:0;height:auto;left:48%}
+  .hs-new .hs-cta,.hs-trade .hs-cta,.hs-dyson .hs-cta{margin-top:28px;max-width:360px}
+  .fresh{margin-top:16px}
+  .qcats{grid-template-columns:repeat(8,minmax(0,1fr));gap:16px 12px}
+  .qc{font-size:12.5px}
+  .rail{grid-auto-flow:row;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-columns:auto;overflow:visible;margin:0;padding:0;gap:14px}
+  .rail>.pc:nth-child(n+9){display:none}
+  .grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+  .duo-c{min-height:200px;padding:26px}
+  .duo-c b{font-size:24px}
+  .why{grid-template-columns:repeat(6,minmax(0,1fr))}
+  .layout{display:grid;grid-template-columns:270px minmax(0,1fr);gap:24px;align-items:start}
   .layout.one{display:block}
-  .left{display:flex;flex-direction:column;gap:16px;position:sticky;top:96px;max-height:calc(100vh - 112px);overflow:auto}
-  .side{position:static}
-  .filters{display:block;position:static;border-radius:var(--r);padding:0 16px 8px;overflow:visible;z-index:auto}
-  .f-h{position:static;padding:14px 0 6px;border:0}
-  .f-h .ibtn{display:none}
-  .f-acts{position:static;display:block;border:0;padding:12px 0}
-  .f-acts .btn:not(.ghost){display:none}
-  .f-acts .btn.ghost{width:100%;height:40px;font-size:14px}
+  .left{display:block;position:sticky;top:150px;max-height:calc(100vh - 170px);overflow:auto;scrollbar-width:thin}
+  .side{display:block;background:#fff;border-radius:22px;padding:16px;box-shadow:var(--sh-s);margin-bottom:12px}
+  .side h2{font:700 15px var(--display);margin-bottom:10px}
+  .side ul{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+  .side a{display:flex;justify-content:space-between;gap:8px;padding:8px 10px;border-radius:10px;color:var(--text);font-weight:600;font-size:14px}
+  .side a:hover{background:var(--bg)}
+  .side a.on{background:var(--blue-ll);color:var(--blue);font-weight:800}
+  .side a span{color:var(--muted);font-size:12px}
+  .layout .chips{display:none}
+  .filters{display:block;position:static;padding:4px 16px 16px;background:#fff;border-radius:22px;box-shadow:var(--sh-s);overflow:visible}
+  .f-h .ibtn,.f-acts .btn:not(.ghost){display:none}
+  .f-h{position:static;padding:12px 0}
+  .f-acts{position:static;border:0;padding:12px 0 0;display:block}
+  .f-acts .btn.ghost{width:100%}
   .fbtn{display:none}
-  .f-vals label{min-height:32px;font-size:14px}
-  .tools{justify-content:flex-end}
-  .tools select{flex:0 0 220px}
-  .prod{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:24px;align-items:start}
-  .prod .gal{height:520px;position:sticky;top:96px;grid-row:span 3}
-  .prod h1{font-size:28px}
-  .buy-acts{flex-direction:row}
-  .buy-acts .btn{flex:1}
-  .cart-layout{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:24px;align-items:start}
-  .cart-layout aside{position:sticky;top:96px}
-  .foot-g{grid-template-columns:2fr 1fr 1fr 1fr}
+  .prod{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:32px;align-items:start}
+  .p-gal{position:sticky;top:150px}
+  .gal{max-height:none}
+  .g-s{max-height:none}
+  .prod h1{font-size:30px}
+  .buy{padding:24px}
+  .cart-layout{grid-template-columns:minmax(0,1fr) 380px;align-items:start;gap:20px}
+  .cart-side{position:sticky;top:150px}
+  .ti-grid{grid-template-columns:minmax(0,1fr) 380px;align-items:start}
+  .pr-in{padding:40px 48px}
+  .pr-hero h1{font-size:46px}
+  .sys-in{padding:48px 52px}
+  .sys-hero h1{font-size:54px}
+  .sys-stats{grid-template-columns:repeat(6,minmax(0,1fr))}
+  .sys-demo{grid-template-columns:1fr 420px;gap:48px}
+  .sd-txt h2{font-size:34px}
+  .flow{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .feats{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .sys-cta{flex-direction:row;align-items:center;justify-content:space-between;padding:32px 40px}
+  .foot-top{flex-direction:row;align-items:center;justify-content:space-between}
+  .foot-g{grid-template-columns:2fr 1fr 1fr}
+  .sheet{left:50%;right:auto;bottom:50%;width:480px;transform:translate(-50%,50%);border-radius:28px;animation:fade .25s}
+  .sheet::before{display:none}
+  .sv-in{height:min(860px,96vh);margin:auto;border-radius:28px}
 }
-@media (min-width:1200px){.grid{grid-template-columns:repeat(5,minmax(0,1fr))}.layout .grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
-@media (max-width:360px){.cats{grid-template-columns:repeat(2,minmax(0,1fr))}.hero-art{display:none}}
-.pc .price,.pc .card-price{display:block}
-[hidden]{display:none!important}
-/* подсказки поиска с картинками */
-.suggest a{align-items:center}
-.suggest a span{flex:1;min-width:0}
-.suggest .th{width:40px;height:40px;object-fit:contain;flex-shrink:0;mix-blend-mode:multiply;border-radius:8px;background:var(--pic)}
-.suggest i.th{display:block}
-
-/* --- отзывы --- */
-.stars{color:#F5A400;letter-spacing:1px;white-space:nowrap}
-.stars i{font-style:normal;color:var(--line-2)}
-.rv-link{font-weight:700;color:var(--text);font-size:14px}
-.rv-sum{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.rv-sum b{font-size:30px;line-height:1}
-.rv-sum .stars{font-size:20px}
-.rv-list{display:grid;gap:10px;margin:8px 0 14px}
-.rv{border-top:1px solid var(--line);padding-top:12px}
-.rv-h{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:14px}
-.rv p{margin:6px 0 0;line-height:1.5}
-.rv-prod{font-size:13px;margin-top:4px}
-.rv-src{font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--pic);color:var(--muted)}
-.rv-src.ok{background:#E7F6EE;color:var(--ok)}
-.rv-reply{margin-top:8px;padding:10px 12px;border-radius:var(--r-s);background:var(--pic);font-size:14px}
-.rv-form{margin-top:12px}
-.rv-form summary{list-style:none;width:auto}
-.rv-form summary::-webkit-details-marker{display:none}
-.rv-form[open] summary{display:none}
-.rv-form form{display:grid;gap:12px;max-width:560px}
-.rate{display:flex;flex-direction:row-reverse;justify-content:flex-end;gap:2px}
-.rate input{position:absolute;opacity:0;width:1px;height:1px}
-.rate label{font-size:34px;line-height:1;color:var(--line-2);cursor:pointer;padding:0 2px}
-.rate label:hover,.rate label:hover~label,.rate input:checked~label{color:#F5A400}
-.rate input:focus-visible+label{outline:2px solid var(--acc);border-radius:4px}
-.rv-done{font-weight:700;color:var(--ok)}
-
-/* --- история цены --- */
-.buy .old{color:var(--muted);font-size:18px;font-weight:600;margin-left:8px}
-.buy .drop{display:inline-block;margin-left:8px;padding:2px 8px;border-radius:999px;background:#E7F6EE;color:var(--ok);font-size:13px;font-weight:800;vertical-align:middle}
-.ph h2{font-size:17px}
-.ph-h{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
-.ph-badge{font-size:12px;font-weight:800;padding:4px 10px;border-radius:999px;background:#E7F6EE;color:var(--ok)}
-.ph svg{width:100%;height:120px}
-.ph-axis{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted);margin-top:4px}
-.ph-note{font-size:13px;margin:10px 0 0}
-.panel.buy+.ph-note{margin-top:0}
-
-/* телефон: «Фильтры · Популярные · С ценой» в одну строку без обрезки */
-@media (max-width:899px){
-  .tools{gap:6px}
-  .tools .fbtn,.tools label{padding:0 8px}
-  .tools select{padding:0 4px 0 8px;min-width:119px}
+@media (min-width:1200px){
+  .grid{grid-template-columns:repeat(5,minmax(0,1fr))}
+  .rail{grid-template-columns:repeat(5,minmax(0,1fr))}
+  .rail>.pc:nth-child(n+9){display:flex}
+  .rail>.pc:nth-child(n+11){display:none}
+  .hs{height:500px}
+  .hs-big{font-size:176px}
 }
+@media (hover:none){.pc:hover{transform:none}.pc:hover .pic img{transform:none}}
 
-/* Неделя 11.11: слайдер акций на главной */
-.hs{display:grid;gap:10px;min-width:0}
-.hs-track{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;border-radius:20px;overscroll-behavior-x:contain}
-.hs-track::-webkit-scrollbar{display:none}
-.hs-track>.hero{flex:0 0 100%;min-width:0;scroll-snap-align:start}
-.hs-dots{display:flex;justify-content:center;gap:8px}
-.hs-dots button{width:8px;height:8px;padding:0;border:0;border-radius:999px;background:var(--line-2);cursor:pointer;transition:width .2s,background-color .2s}
-.hs-dots button[aria-current="true"]{width:24px;background:var(--acc)}
-.hero-sale{background:radial-gradient(120% 140% at 100% 0%,#14408F 0%,var(--hero) 58%)}
-.tag.sale{background:var(--mark);color:#fff}
-.sale-h{margin:2px 0 0;font:400 34px/1 var(--display);color:#fff;white-space:nowrap}
-.sale-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:4px}
-.sale-code{display:inline-flex;align-items:center;gap:8px;height:48px;padding:0 14px;border:2px dashed var(--hl);border-radius:var(--r-s);background:rgba(25,200,255,.08);color:#fff;font:400 20px var(--display);letter-spacing:.12em;cursor:pointer}
-.sale-code svg{color:var(--hl)}
-.sale-code small{font:700 12px var(--body);letter-spacing:0;color:var(--hero-t)}
-.sale-code small:empty{display:none}
-.hero-sale p b{white-space:nowrap}
-.sale-code:hover{background:rgba(25,200,255,.16)}
-.sale-timer{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0;font-size:13px;color:var(--hero-t)}
-.hero-sale .sale-timer b{display:inline-flex;justify-content:center;min-width:38px;padding:4px 6px;border-radius:8px;background:rgba(255,255,255,.1);color:#fff;font:400 14px var(--display)}
-.sale-art{flex-shrink:0;display:grid;place-items:center;width:96px;font:400 44px/.9 var(--display);text-align:center;background:var(--mark);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 22px var(--glow))}
-.sale-art span{display:block}
-@media (max-width:899px){
-  .hero-sale{position:relative}
-  .hero-sale .hero-t{position:relative;z-index:1}
-  .sale-h{font-size:44px}
-  .sale-timer{gap:5px}
-  .hero-sale .sale-timer b{min-width:0;padding:3px 7px;font-size:13px}
-  .sale-art{position:absolute;right:-4px;top:50%;transform:translateY(-50%);width:auto;font-size:118px;opacity:.28;pointer-events:none}
-}
-@media (min-width:900px){
-  .sale-h{font-size:64px}
-  .sale-art{width:320px;font-size:150px}
-  .sale-timer{font-size:15px}
-  .hero-sale .sale-timer b{min-width:48px;font-size:18px}
-}
-@media (prefers-reduced-motion:reduce){.hs-dots button{transition:none}}
-.promo-note{margin:-2px 0 0;font-size:13px}
-.promo-note.ok{color:var(--acc);font-weight:700}
