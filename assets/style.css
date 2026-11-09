@@ -362,3 +362,43 @@ body.fopen{overflow:hidden}
   .tools .fbtn,.tools label{padding:0 8px}
   .tools select{padding:0 4px 0 8px;min-width:119px}
 }
+
+/* Неделя 11.11: слайдер акций на главной */
+.hs{display:grid;gap:10px;min-width:0}
+.hs-track{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;border-radius:20px;overscroll-behavior-x:contain}
+.hs-track::-webkit-scrollbar{display:none}
+.hs-track>.hero{flex:0 0 100%;min-width:0;scroll-snap-align:start}
+.hs-dots{display:flex;justify-content:center;gap:8px}
+.hs-dots button{width:8px;height:8px;padding:0;border:0;border-radius:999px;background:var(--line-2);cursor:pointer;transition:width .2s,background-color .2s}
+.hs-dots button[aria-current="true"]{width:24px;background:var(--acc)}
+.hero-sale{background:radial-gradient(120% 140% at 100% 0%,#14408F 0%,var(--hero) 58%)}
+.tag.sale{background:var(--mark);color:#fff}
+.sale-h{margin:2px 0 0;font:400 34px/1 var(--display);color:#fff;white-space:nowrap}
+.sale-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:4px}
+.sale-code{display:inline-flex;align-items:center;gap:8px;height:48px;padding:0 14px;border:2px dashed var(--hl);border-radius:var(--r-s);background:rgba(25,200,255,.08);color:#fff;font:400 20px var(--display);letter-spacing:.12em;cursor:pointer}
+.sale-code svg{color:var(--hl)}
+.sale-code small{font:700 12px var(--body);letter-spacing:0;color:var(--hero-t)}
+.sale-code small:empty{display:none}
+.hero-sale p b{white-space:nowrap}
+.sale-code:hover{background:rgba(25,200,255,.16)}
+.sale-timer{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0;font-size:13px;color:var(--hero-t)}
+.hero-sale .sale-timer b{display:inline-flex;justify-content:center;min-width:38px;padding:4px 6px;border-radius:8px;background:rgba(255,255,255,.1);color:#fff;font:400 14px var(--display)}
+.sale-art{flex-shrink:0;display:grid;place-items:center;width:96px;font:400 44px/.9 var(--display);text-align:center;background:var(--mark);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 22px var(--glow))}
+.sale-art span{display:block}
+@media (max-width:899px){
+  .hero-sale{position:relative}
+  .hero-sale .hero-t{position:relative;z-index:1}
+  .sale-h{font-size:44px}
+  .sale-timer{gap:5px}
+  .hero-sale .sale-timer b{min-width:0;padding:3px 7px;font-size:13px}
+  .sale-art{position:absolute;right:-4px;top:50%;transform:translateY(-50%);width:auto;font-size:118px;opacity:.28;pointer-events:none}
+}
+@media (min-width:900px){
+  .sale-h{font-size:64px}
+  .sale-art{width:320px;font-size:150px}
+  .sale-timer{font-size:15px}
+  .hero-sale .sale-timer b{min-width:48px;font-size:18px}
+}
+@media (prefers-reduced-motion:reduce){.hs-dots button{transition:none}}
+.promo-note{margin:-2px 0 0;font-size:13px}
+.promo-note.ok{color:var(--acc);font-weight:700}

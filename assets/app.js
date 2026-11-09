@@ -289,6 +289,10 @@
     var form = document.getElementById('order');
     var tpl = document.getElementById('row-tpl').innerHTML;
     var CARD_PCT = +cartBox.dataset.cardPct || 10;
+    // промокод недели 11.11: −1 111 ₽ на заказ от 11 111 ₽, до 15.11 23:59 МСК
+    var PROMO = {code: '1111', off: 1111, min: 11111, end: Date.parse('2026-11-15T23:59:59+03:00')};
+    if (form.promo && !form.promo.value) { try { form.promo.value = localStorage.getItem('emir_promo') || ''; } catch (e) {} }
+    if (form.promo) form.promo.addEventListener('input', function () { render(); });
     var cardPrice = function (it) { return it.c || Math.ceil(it.p * (1 + CARD_PCT / 100) / 100) * 100 - 10; };
     function render() {
       var c = load(), byCard = form.pay.value === 'card';
@@ -304,6 +308,18 @@
       }).join('');
       var goods = c.reduce(function (s, it) { return s + it.p * it.q; }, 0);
       var tot = c.reduce(function (s, it) { return s + (byCard ? cardPrice(it) : it.p) * it.q; }, 0);
+      var code = form.promo ? form.promo.value.trim() : '', disc = 0, note = '';
+      if (code) {
+        if (code !== PROMO.code) note = 'Такого промокода нет';
+        else if (Date.now() > PROMO.end) note = 'Акция 11.11 закончилась';
+        else if (goods < PROMO.min) note = 'Код действует на заказ от ' + fmt(PROMO.min) + '. Добавьте товаров ещё на ' + fmt(PROMO.min - goods);
+        else { disc = PROMO.off; note = 'Промокод применён: −' + fmt(PROMO.off); }
+      }
+      tot -= disc;
+      var pn = document.getElementById('promo-note');
+      if (pn) { pn.textContent = note; pn.classList.toggle('ok', disc > 0); }
+      var sp = document.getElementById('s-promo');
+      if (sp) { sp.hidden = !disc; document.getElementById('s-promo-v').textContent = '−' + fmt(disc); }
       var n = c.reduce(function (s, it) { return s + it.q; }, 0);
       document.getElementById('s-n').textContent = n;
       document.getElementById('s-goods').textContent = fmt(goods);
@@ -335,6 +351,7 @@
       var body = {
         name: form.name.value.trim(), phone: form.phone.value.trim(), way: form.way.value, pay: form.pay.value,
         address: form.address.value.trim(), comment: form.comment.value.trim(), website: form.website.value,
+        promo: form.promo ? form.promo.value.trim() : '',
         items: load().map(function (it) { return {a: it.a, q: it.q}; })
       };
       fetch('/emir/api/order', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)})
@@ -380,6 +397,53 @@
           btn.disabled = false;
         });
     });
+  }
+
+  // --- главная: слайдер акций (неделя 11.11) и честный таймер до конца акции ---
+  var hs = document.getElementById('hs-track'), sale = document.getElementById('sale');
+  if (hs && sale) {
+    var saleEnd = Date.parse(sale.dataset.end), dotsBox = document.querySelector('.hs-dots');
+    var dropSale = function () { sale.remove(); if (dotsBox) dotsBox.remove(); };
+    if (!(saleEnd > Date.now())) dropSale();
+    else {
+      var dots = dotsBox.querySelectorAll('button'), cur = 0, paused = false;
+      var calm = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+      var tick = function () {
+        var left = saleEnd - Date.now();
+        if (left <= 0) { dropSale(); return false; }
+        var d = Math.floor(left / 864e5), h = Math.floor(left / 36e5) % 24, m = Math.floor(left / 6e4) % 60;
+        sale.querySelector('[data-d]').textContent = d + ' д';
+        sale.querySelector('[data-h]').textContent = pad(h) + ' ч';
+        sale.querySelector('[data-m]').textContent = pad(m) + ' мин';
+        return true;
+      };
+      var mark = function () {
+        var w = hs.children[1] ? hs.children[1].offsetLeft - hs.children[0].offsetLeft : hs.clientWidth;
+        cur = Math.round(hs.scrollLeft / w);
+        dots.forEach(function (b, k) { b.setAttribute('aria-current', k === cur ? 'true' : 'false'); });
+      };
+      var go = function (i) {
+        var n = hs.children.length; cur = (i + n) % n;
+        hs.scrollTo({left: hs.children[cur].offsetLeft - hs.children[0].offsetLeft, behavior: calm ? 'auto' : 'smooth'});
+      };
+      dots.forEach(function (b, k) { b.addEventListener('click', function () { go(k); }); });
+      hs.addEventListener('scroll', function () { window.requestAnimationFrame(mark); }, {passive: true});
+      ['pointerenter', 'focusin', 'touchstart'].forEach(function (t) { hs.addEventListener(t, function () { paused = true; }, {passive: true}); });
+      ['pointerleave', 'focusout'].forEach(function (t) { hs.addEventListener(t, function () { paused = false; }); });
+      if (tick()) {
+        var clock = setInterval(function () { if (!tick()) clearInterval(clock); }, 20000);
+        if (!calm) setInterval(function () { if (!paused && !document.hidden && document.getElementById('sale')) go(cur + 1); }, 7000);
+      }
+      var cb = sale.querySelector('[data-copy]');
+      cb.addEventListener('click', function () {
+        var code = cb.dataset.copy, lbl = cb.querySelector('[data-copied]');
+        try { localStorage.setItem('emir_promo', code); } catch (e) {}
+        var done = function (t) { lbl.textContent = t; setTimeout(function () { lbl.textContent = ''; }, 2200); };
+        if (navigator.clipboard) navigator.clipboard.writeText(code).then(function () { done('скопирован'); }, function () { done('код 1111'); });
+        else done('код 1111');
+      });
+    }
   }
 
   badge();
