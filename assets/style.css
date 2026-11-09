@@ -1055,9 +1055,10 @@ body.has-buybar{padding-bottom:calc(140px + env(safe-area-inset-bottom))}
   .gcd b{font-size:clamp(22px,2.9vw,38px)}
   .gcd small{font-size:clamp(9px,.9vw,11px)}
   .hs-gta .hs-p{max-width:46%;margin-top:clamp(10px,1.4vw,16px)}
+  .hs-gta .hs-cta{max-width:min(48%,440px)}           /* кнопки не заходят на геймпад справа */
   .hs-gta .hs-art{left:50%;right:2%;top:5%;bottom:0}
   .g1{height:96%;height:min(96%,100cqw);right:8%}
-  .g2{height:30%;height:min(30%,34cqw);left:0;bottom:6%}
+  .g2{height:30%;height:min(30%,34cqw);left:5%;bottom:6%}
   .sun{width:min(38%,420px);right:8%;bottom:18%}
   .ngrid{height:40%}
 
