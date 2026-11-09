@@ -143,20 +143,26 @@ document.addEventListener('click', function (e) {
 });
 // отсчёт до конца акции: data-cd="2026-11-15T23:59:59+03:00". Когда акция кончилась, всё с data-promo
 // (баннер, вкладка «Акция», цены с кодом) прячется само на любой странице, а data-promo-over — показывается.
+// Отсчёт до своего события (data-cd-own="gta" — выход игры) от акции не зависит: когда время вышло,
+// прячется всё с data-before="gta" и показывается data-after="gta".
 (function () {
   var end = Date.parse(document.documentElement.getAttribute('data-promo-end') || '');
   function over() {
-    document.querySelectorAll('[data-promo],[data-cd]').forEach(function (p) { p.hidden = true; });
+    document.querySelectorAll('[data-promo],[data-cd]:not([data-cd-own])').forEach(function (p) { p.hidden = true; });
     document.querySelectorAll('[data-promo-over]').forEach(function (p) { p.hidden = false; });
   }
-  if (end && end <= Date.now()) { over(); return; }
-  var els = document.querySelectorAll('[data-cd]');
+  function happened(id) {
+    document.querySelectorAll('[data-before="' + id + '"]').forEach(function (p) { p.hidden = true; });
+    document.querySelectorAll('[data-after="' + id + '"]').forEach(function (p) { p.hidden = false; });
+  }
+  if (end && end <= Date.now()) over();
+  var els = Array.prototype.filter.call(document.querySelectorAll('[data-cd]'), function (el) { return !el.hidden; });
   if (!els.length) return;
   var pad = function (n) { return (n < 10 ? '0' : '') + n; };
   function tick() {
     els.forEach(function (el) {
       var left = Date.parse(el.getAttribute('data-cd')) - Date.now();
-      if (!(left > 0)) { over(); return; }
+      if (!(left > 0)) { if (el.hasAttribute('data-cd-own')) happened(el.getAttribute('data-cd-own')); else over(); return; }
       var s = Math.floor(left / 1000);
       var set = function (q, v) { var x = el.querySelector(q); if (x && x.textContent !== v) x.textContent = v; };
       set('[data-d]', String(Math.floor(s / 86400))); set('[data-h]', pad(Math.floor(s / 3600) % 24));
@@ -452,6 +458,7 @@ if (grid) {
   var ICO = {swap: '<path d="M17 3l4 4-4 4"/><path d="M3 7h18"/><path d="M7 21l-4-4 4-4"/><path d="M21 17H3"/>',
     gift: '<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8"/><path d="M12 8S10.5 3 8 3a2.5 2.5 0 0 0 0 5M12 8s1.5-5 4-5a2.5 2.5 0 0 1 0 5"/>',
     user: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+    game: '<path d="M7.5 7h9a5 5 0 0 1 4.9 6l-.8 4a2.6 2.6 0 0 1-4.5 1.2L14 16h-4l-2.1 2.2a2.6 2.6 0 0 1-4.5-1.2l-.8-4A5 5 0 0 1 7.5 7z"/><path d="M8 10.5v3M6.5 12h3M15.5 11h.01M17.5 13h.01"/>',
     check: '<path d="M5 12l5 5 9-10"/>', percent: '<path d="M19 5L5 19"/><circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="17" r="2.5"/>',
     truck: '<rect x="1" y="6" width="14" height="11" rx="1"/><path d="M15 9h4l3 3v5h-7"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/>'};
   var svg = function (b, s) { return '<svg width="' + s + '" height="' + s + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + b + '</svg>'; };
@@ -459,6 +466,7 @@ if (grid) {
   var si = 0, li = 0, t0 = 0, dur = 5000, paused = false, raf = null;
   function slideHtml(st, s) {
     var cta = function (t, u) { return '<a class="btn volt" href="' + esc(u) + '">' + esc(t) + '</a>'; };
+    if (s.alt && Date.parse(s.alt.at) <= Date.now()) s = {k: s.k, h: s.alt.h, p: s.alt.p, cta: s.cta, ic: s.ic};   // событие уже прошло
     if (s.k === 'promo') return '<div class="sv-img"><img src="' + esc(s.i) + '" alt=""></div><span class="sv-k">' + esc(st.t) + ' · ' + esc(s.until) + '</span>' +
       '<div class="sv-h huge">' + esc(s.h) + '</div><p class="sv-p">' + esc(s.p) + '</p>' +
       '<button class="code" type="button" data-copy="' + esc(s.code) + '"><span>Код <b>' + esc(s.code) + '</b> — скопировать</span></button>' + cta('Выбрать технику', B + '/promo/');
