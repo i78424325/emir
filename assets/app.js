@@ -587,6 +587,16 @@ var pl = function (n, one, few, many) {
   n = Math.abs(n) % 100; var d = n % 10;
   return n > 10 && n < 20 ? many : d > 1 && d < 5 ? few : d === 1 ? one : many;
 };
+// иконки в уведомлениях вместо эмодзи — те же линии, что по всему сайту: подарок и монета бонусов
+var tIco = function (p) {
+  return '<svg class="t-ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
+         'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p + '</svg>';
+};
+var TI = {
+  gift: tIco('<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8"/>' +
+             '<path d="M12 8S10.5 3 8 3a2.5 2.5 0 0 0 0 5M12 8s1.5-5 4-5a2.5 2.5 0 0 1 0 5"/>'),
+  coin: tIco('<path d="M12 2l8.7 5v10L12 22l-8.7-5V7z"/><path d="M10 7.5v9M10 7.5h2.8a2.3 2.3 0 0 1 0 4.6H8.5M8.5 14.5h5"/>')
+};
 function user() { return ls(UKEY, null); }
 function orders() { return ls(OKEY, []); }
 function accMark() {
@@ -619,7 +629,7 @@ accMark();
   if (u && u.code === code) return;                       // своя же ссылка
   lss('emir_ref', code);
   if (!orders().length && ACC.w) setTimeout(function () {
-    toast('🎁 Друг дарит вам −' + fmt(ACC.w) + ' на первую покупку от ' + fmt(ACC.m) + ' · <a href="' + B + '/account/">Войти</a>', 6500);
+    toast(TI.gift + '<span>Друг дарит вам −' + fmt(ACC.w) + ' на первую покупку от ' + fmt(ACC.m) + ' · <a href="' + B + '/account/">Войти</a></span>', 6500);
   }, 700);
 })();
 
@@ -702,7 +712,7 @@ if (accRoot) (function () {
       v.bal += ACC.r; v.fr += 1;
       v.hist = [{t: Date.now(), v: ACC.r, d: 'Друг получил заказ по вашей ссылке'}].concat(v.hist || []);
       setUser(v); buzz(40);
-      toast('🎉 +' + num(ACC.r) + ' бонусов: друг получил заказ', 3000);
+      toast(TI.coin + '<span>+' + num(ACC.r) + ' бонусов: друг получил заказ</span>', 3000);
       draw();
       var b = accRoot.querySelector('[data-bal]');
       roll(b, was, v.bal); b.parentNode.classList.add('pop');
