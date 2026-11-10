@@ -72,8 +72,9 @@ p{margin:0}
 .consent input{width:22px;height:22px;margin:0;flex-shrink:0;accent-color:var(--blue)}
 .err{color:var(--warn);font-size:14px;font-weight:700}
 .err:empty{display:none}
-/* точка «в наличии» без пульса: цены обновляются раз в день по прайсам, а не в прямом эфире */
-.live{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ok);margin-right:8px;vertical-align:middle}
+.live{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ok);margin-right:8px;vertical-align:middle;
+  box-shadow:0 0 0 0 rgba(14,159,87,.5);animation:live 2s infinite}
+@keyframes live{70%{box-shadow:0 0 0 8px rgba(14,159,87,0)}100%{box-shadow:0 0 0 0 rgba(14,159,87,0)}}
 
 /* --- строка «концепт» --- */
 .concept{background:var(--night);color:#C9D3EA;font-size:12px;font-weight:600}
@@ -105,7 +106,6 @@ main{padding:14px 0 36px}
   width:max-content}   /* иначе от left:50% браузер даёт тосту только правую половину экрана — текст ломался в 5 строк */
 .toast.on{opacity:1;transform:translate(-50%,0)}
 .toast a{color:var(--volt)}
-.toast .t-ic{flex-shrink:0;color:var(--volt)}           /* салатовый — цвет выгоды: подарок, бонусы */
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 
 /* --- шапка --- */
@@ -118,9 +118,9 @@ main{padding:14px 0 36px}
 .lg-box{position:relative;font:800 17px/1 var(--display);letter-spacing:.03em;color:var(--blue);padding:7px 10px 6px;
   border:2px solid currentColor;border-radius:8px}
 .lg-box::after{content:"";position:absolute;right:-5px;top:-5px;width:8px;height:8px;border-radius:2.5px;background:var(--volt);
-  box-shadow:0 0 0 2.5px #fff}                       /* точка плоская: без свечения */
+  box-shadow:0 0 0 2.5px #fff,0 0 12px rgba(198,255,58,.9)}
 .lg-sub{font:700 10px/1.15 var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);max-width:92px}
-.lg-d .lg-box{color:#fff}.lg-d .lg-box::after{box-shadow:0 0 0 2.5px var(--night)}
+.lg-d .lg-box{color:#fff}.lg-d .lg-box::after{box-shadow:0 0 0 2.5px var(--night),0 0 12px rgba(198,255,58,.9)}
 .lg-d .lg-sub{color:#8C98B8}
 .top-actions{display:flex;gap:6px;margin-left:auto}
 .ibtn{position:relative;width:44px;height:44px;border-radius:14px;display:grid;place-items:center;color:var(--text);background:transparent;border:0}
@@ -163,8 +163,10 @@ main{padding:14px 0 36px}
 .tabbar .badge{top:3px;right:auto;left:calc(50% + 5px)}
 .tab-sale{color:var(--text)!important}
 .ts-ring{display:grid;place-items:center;width:52px;height:52px;margin-top:-22px;border-radius:18px;background:var(--night);color:var(--volt);
-  font:800 13px/1 var(--display);box-shadow:0 10px 24px rgba(6,10,22,.35),inset 0 0 0 1.5px rgba(198,255,58,.55)}
-/* без бегущего блика: кнопка и так выделена цветом и подъёмом над меню */
+  font:800 13px/1 var(--display);letter-spacing:-.02em;box-shadow:0 10px 24px rgba(6,10,22,.35),inset 0 0 0 1.5px rgba(198,255,58,.55);
+  position:relative;overflow:hidden}
+.ts-ring::after{content:"";position:absolute;inset:-40%;background:linear-gradient(115deg,transparent 40%,rgba(198,255,58,.35) 50%,transparent 60%);
+  animation:beam 3.4s linear infinite}
 
 /* --- шторки (рассрочка, 1 клик, фильтры) --- */
 .sheet-bg{position:fixed;inset:0;z-index:70;background:rgba(6,10,22,.45);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);animation:fade .2s}
@@ -261,10 +263,11 @@ body.lock{overflow:hidden}
 @keyframes fl{50%{translate:0 -8px}}
 .hs-offer{margin-top:auto;display:flex;align-items:center;gap:12px;position:relative;z-index:5}
 .tagp{position:relative;background:var(--volt);color:var(--night);border-radius:16px;padding:9px 16px 10px 20px;transform:rotate(-4deg);
-  box-shadow:0 12px 30px rgba(198,255,58,.35);display:flex;flex-direction:column;gap:2px}   /* ценник стоит ровно — парят только товары */
+  box-shadow:0 12px 30px rgba(198,255,58,.35);display:flex;flex-direction:column;gap:2px;animation:wob 4s ease-in-out infinite}
 .tagp::before{content:"";position:absolute;left:8px;top:50%;width:6px;height:6px;margin-top:-3px;border-radius:50%;background:#0A1330}
 .tagp small{font:800 9.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;opacity:.75}
 .tagp b{font:800 27px/1 var(--display);letter-spacing:-.03em;white-space:nowrap}
+@keyframes wob{50%{transform:rotate(-2deg) translateY(-2px)}}
 .hs-offer p{font:700 14px/1.3 var(--body)}
 .hs-offer p span{display:block;font:700 11px/1.4 var(--mono);color:var(--volt);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
 .hs-cta{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;margin-top:14px;position:relative;z-index:5}
@@ -312,7 +315,7 @@ body.lock{overflow:hidden}
 .brands .br-row{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 calc(-1 * max(16px,env(safe-area-inset-left)));padding:2px max(16px,env(safe-area-inset-left)) 8px}
 .br-row::-webkit-scrollbar{display:none}
 .br{flex-shrink:0;height:52px;padding:0 22px;border-radius:16px;background:#fff;box-shadow:var(--sh-s);display:grid;place-items:center;
-  font:700 15px var(--display);color:var(--text);white-space:nowrap}
+  font:700 15px var(--display);color:var(--text);letter-spacing:-.01em;white-space:nowrap}
 .br:hover{color:var(--blue)}
 .duo{display:grid;gap:10px}
 .duo-c{position:relative;overflow:hidden;min-height:156px;border-radius:24px;padding:18px;display:flex;flex-direction:column;gap:6px;color:#fff;isolation:isolate}
@@ -480,6 +483,7 @@ body.fopen{overflow:hidden}
 .b-card{font-size:13px;color:var(--muted);font-weight:600;margin-top:-4px}
 .b-promo,.b-inst{display:flex;align-items:center;gap:10px;width:100%;min-height:50px;padding:10px 14px;border-radius:16px;border:0;text-align:left;font-size:14px;font-weight:600}
 .b-promo{background:var(--night);color:#fff;position:relative;overflow:hidden}
+.b-promo::after{content:"";position:absolute;inset:-50%;background:linear-gradient(115deg,transparent 45%,rgba(198,255,58,.18) 50%,transparent 55%);animation:beam 4s linear infinite}
 .b-promo svg{color:var(--volt);flex-shrink:0}
 .b-promo b{color:var(--volt);font-family:var(--display);font-weight:700}
 .b-promo .cd{position:relative;z-index:1}
