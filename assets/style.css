@@ -100,10 +100,8 @@ main{padding:14px 0 36px}
 .empty .em-h{font:700 20px var(--display);color:var(--text)}
 .empty .btn{margin-top:6px}
 .toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom));transform:translate(-50%,20px);z-index:90;background:var(--night);color:#fff;
-  padding:12px 18px;border-radius:14px;font-weight:700;font-size:14px;opacity:0;pointer-events:none;
-  transition:opacity .3s var(--ease),transform .3s var(--ease);
-  box-shadow:var(--sh-l);display:flex;align-items:center;gap:10px;max-width:calc(100% - 32px);
-  width:max-content}   /* иначе от left:50% браузер даёт тосту только правую половину экрана — текст ломался в 5 строк */
+  padding:12px 18px;border-radius:14px;font-weight:700;font-size:14px;opacity:0;pointer-events:none;transition:all .3s var(--ease);
+  box-shadow:var(--sh-l);display:flex;align-items:center;gap:10px;max-width:calc(100% - 32px)}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 .toast a{color:var(--volt)}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
@@ -396,9 +394,6 @@ body.lock{overflow:hidden}
 .tools select{flex:1;min-width:0;-webkit-appearance:none;appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235D6880' stroke-width='2' fill='none'/%3E%3C/svg%3E") no-repeat right 14px center;padding-right:34px}
 .tools .pr{white-space:nowrap}
 .tools .pr input{accent-color:var(--blue);width:18px;height:18px;margin:0}
-/* у Е-Мир в витрине у всех товаров есть цена — галочка «С ценой» ничего не отсеивала, а у сортировки съедала место
-   (на телефоне 390px было «Популяр…»). Разметка общая с МегаОптом, поэтому прячем здесь, а не в render.py */
-.tools .pr{display:none}
 .fbtn{flex-shrink:0;cursor:pointer}
 .fbtn [data-fcount]:not(:empty){min-width:20px;height:20px;border-radius:999px;background:var(--blue);color:#fff;font-size:12px;line-height:20px;text-align:center;padding:0 6px}
 .nores{margin:16px 0}
@@ -899,16 +894,11 @@ body.has-buybar{padding-bottom:calc(140px + env(safe-area-inset-bottom))}
   .search{order:0;flex:1 1 auto}
   .phone-top{display:block}
   .navrow{display:block;border-top:1px solid rgba(10,15,30,.06)}
-  /* разделов больше, чем влезает в строку (2077px при 1320): колесом мыши строку не пролистать, обрезанные было не достать.
-     Теперь видны только целые разделы — лишние уходят на скрытую вторую строку; «Трейд-ин» и «Все разделы» всегда справа */
-  .navrow .wrap{display:flex;align-items:center;gap:4px;padding-top:6px;padding-bottom:6px}
-  .nr-l{display:flex;flex-wrap:wrap;gap:0 4px;flex:1;min-width:0;height:34px;overflow:hidden}
-  .nr-l:focus-within{height:auto}                     /* с клавиатуры Tab раскрывает все разделы */
-  .navrow a{flex-shrink:0;display:inline-flex;align-items:center;height:34px;padding:0 12px;border-radius:10px;color:var(--text);
-    font-weight:700;font-size:13.5px;white-space:nowrap}
+  .navrow .wrap{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding-top:6px;padding-bottom:6px}
+  .navrow .wrap::-webkit-scrollbar{display:none}
+  .navrow a{flex-shrink:0;padding:8px 12px;border-radius:10px;color:var(--text);font-weight:700;font-size:13.5px;white-space:nowrap}
   .navrow a:hover,.navrow a[aria-current]{background:var(--blue-ll);color:var(--blue)}
   .navrow .nr-x{color:var(--blue)}
-  .navrow .nr-all{color:var(--muted)}
   .mega{position:absolute;left:0;right:0;top:100%;background:#fff;box-shadow:var(--sh-l);border-radius:0 0 28px 28px;max-height:72vh;overflow:auto}
   .mega.on{display:block;animation:sg .2s var(--ease)}
   .mega .wrap{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px 28px;padding-top:24px;padding-bottom:28px}
